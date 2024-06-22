@@ -1,3 +1,55 @@
+@import url('https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@400..700&display=swap');
 body{
-    background-color: beige;
+    background-color: beige;  
+}
+.mainBoard{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+    background-color: bisque;
+}
+.boatsPicker{
+    display: flex;
+    gap: 45px;
+    flex-direction: row;
+    padding: 35px;
+    justify-items: center;
+    justify-content: space-around;
+    background-color: white;
+}
+.boatsPicker .shipBLOCK{
+    display: flex;
+    justify-items: center;
+    text-align: center;
+    flex-direction: column;
+    justify-content: center;
+    font-family: "Pixelify Sans", sans-serif;
+    font-optical-sizing: auto;
+    font-style: normal;
+    
+}
+.board {
+    display: grid;
+    grid-template-columns: repeat(10, 3.25rem);
+    grid-template-rows: repeat(10, 3.25rem);
+    background-color: #3e70dc;
+    padding: 10px;
+    border-radius: .1rem;
+}
+.carrierSVG{
+    height: 245px;
+
+}
+.cell {
+    background-color: #9ce3ff;
+    border: 1px solid #7999fa;
+}
+.cell:hover{
+    /*background-color: #0041ba;*/
+}
+.boatsPicker .shipBLOCK .dragging{
+    filter: invert(47%) sepia(93%) saturate(1346%) hue-rotate(159deg) brightness(91%) contrast(101%);
+}
+.inFront{
+    z-index: 5;
 }
