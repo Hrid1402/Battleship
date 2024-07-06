@@ -2,8 +2,7 @@ import("./style.css");
 console.log("Working");
 const carrierSVG = document.querySelector(".carrierSVG");
 const CELLS = document.querySelectorAll(".cell");
-console.log(CELLS);
-console.log(carrierSVG);
+
 
 carrierSVG.addEventListener("dragstart", () => {
     carrierSVG.classList.add("dragging");
@@ -18,18 +17,57 @@ carrierSVG.addEventListener("dragend", () => {
     carrierSVG.classList.remove("dragging");
     carrierSVG.style.pointerEvents = '';
 });
-CELLS.forEach((cell) => {
-    cell.addEventListener("dragover", (e) => {
-        e.preventDefault();
-        const dragginShip = document.querySelector(".dragging");
-        cell.appendChild(dragginShip);
-        cell.classList.add("inFront");
-    });
-    cell.addEventListener("dragleave", () => {
-        cell.classList.remove("inFront");
-    });
-});
+let canDrop = true;
+for(let i = 0; i < CELLS.length; i++) {
+  let actualCubes = [];
+  let errorCubes = [];
+  CELLS[i].addEventListener("dragover", (e) => {
+    e.preventDefault();
+    const shipLen = 5;
+    const endShip = i + (shipLen*10-10);
+    if(CELLS[endShip] == null){
+      canDrop = false;
+      let f=i;
+      errorCubes = [];
+      while(CELLS[f] != null){
+        errorCubes.push(f);
+        CELLS[f].classList.add("outRange");
+        f+=10;
+      }
+    }else{
+      canDrop = true;
+      let f = i;
+      actualCubes = [];
+      for(let j = 0; j < shipLen; j++){
+        actualCubes.push(f);
+        CELLS[f].classList.add("colorChange");
+        f+=10;
+      }
+      CELLS[endShip].classList.add("colorChange");
+    }
+  });
 
+  CELLS[i].addEventListener("dragleave", () => {
+    for(let i = 0; i < errorCubes.length; i++){
+      CELLS[errorCubes[i]].classList.remove("outRange");
+    }
+    for(let i = 0; i < actualCubes.length; i++){
+      CELLS[actualCubes[i]].classList.remove("colorChange");
+    }
+  });
+  
+  CELLS[i].addEventListener("drop", () => {
+    if(canDrop == true){
+      CELLS[i].appendChild(carrierSVG);
+      CELLS[i].classList.add("inFront");
+    }else{
+      for(let i = 0; i < errorCubes.length; i++){
+        CELLS[errorCubes[i]].classList.remove("outRange");
+      }
+    }
+  });
+
+}
 class Ship {
   constructor(length) {
     this.length = length;

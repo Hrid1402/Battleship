@@ -1,6 +1,16 @@
 @import url('https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@400..700&display=swap');
 body{
     background-color: beige;  
+    margin: 0;
+}
+.title{
+    background-color: rgb(194, 194, 194);
+    margin: 0;
+    padding: 5px;
+    font-family: "Pixelify Sans", sans-serif;
+    font-optical-sizing: auto;
+    font-size: 55px;
+    margin-bottom: 20px;
 }
 .mainBoard{
     display: flex;
@@ -49,6 +59,13 @@ body{
 }
 .boatsPicker .shipBLOCK .dragging{
     filter: invert(47%) sepia(93%) saturate(1346%) hue-rotate(159deg) brightness(91%) contrast(101%);
+}
+.outRange{
+    background-color: red
+
+}
+.colorChange{
+    background-color: rgba(54, 29, 145, 0.699);
 }
 .inFront{
     z-index: 5;
