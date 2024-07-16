@@ -48,8 +48,17 @@ body{
 }
 .carrierSVG{
     height: 245px;
-
 }
+.battleshipSVG{
+    height: 196px;
+}
+.cruiserSVG, .submarineSVG{
+    height: 147px;
+}
+.destroyerSVG{
+    height: 98px;
+}
+
 .cell {
     background-color: #9ce3ff;
     border: 1px solid #7999fa;
