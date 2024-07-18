@@ -1,73 +1,20 @@
 import("./style.css");
 console.log("Working");
 const carrierSVG = document.querySelector(".carrierSVG");
-const CELLS = document.querySelectorAll(".cell");
+const battleshipSVG = document.querySelector(".battleshipSVG");
+const cruiserSVG = document.querySelector(".cruiserSVG");
+const submarineSVG = document.querySelector(".submarineSVG");
+const destroyerSVG = document.querySelector(".destroyerSVG");
+let curShip = carrierSVG;
+let curShipID = 1;
+let curShipLen = 5;
 
 
-carrierSVG.addEventListener("dragstart", () => {
-    carrierSVG.classList.add("dragging");
-    const dragginShip = document.querySelector(".dragging");
-    setTimeout(() => {
-        dragginShip.classList.add('dragging');
-        dragginShip.style.pointerEvents = 'none'; // Desactiva los eventos del puntero para el elemento arrastrado
-      }, 0);
-    //carrierSVG.remove();
-});
-carrierSVG.addEventListener("dragend", () => {
-    carrierSVG.classList.remove("dragging");
-    carrierSVG.style.pointerEvents = '';
-});
-let canDrop = true;
-for(let i = 0; i < CELLS.length; i++) {
-  let actualCubes = [];
-  let errorCubes = [];
-  CELLS[i].addEventListener("dragover", (e) => {
-    e.preventDefault();
-    const shipLen = 5;
-    const endShip = i + (shipLen*10-10);
-    if(CELLS[endShip] == null){
-      canDrop = false;
-      let f=i;
-      errorCubes = [];
-      while(CELLS[f] != null){
-        errorCubes.push(f);
-        CELLS[f].classList.add("outRange");
-        f+=10;
-      }
-    }else{
-      canDrop = true;
-      let f = i;
-      actualCubes = [];
-      for(let j = 0; j < shipLen; j++){
-        actualCubes.push(f);
-        CELLS[f].classList.add("colorChange");
-        f+=10;
-      }
-      CELLS[endShip].classList.add("colorChange");
-    }
-  });
+let prevInfront = null;
+let prevShip_INF = null;
 
-  CELLS[i].addEventListener("dragleave", () => {
-    for(let i = 0; i < errorCubes.length; i++){
-      CELLS[errorCubes[i]].classList.remove("outRange");
-    }
-    for(let i = 0; i < actualCubes.length; i++){
-      CELLS[actualCubes[i]].classList.remove("colorChange");
-    }
-  });
-  
-  CELLS[i].addEventListener("drop", () => {
-    if(canDrop == true){
-      CELLS[i].appendChild(carrierSVG);
-      CELLS[i].classList.add("inFront");
-    }else{
-      for(let i = 0; i < errorCubes.length; i++){
-        CELLS[errorCubes[i]].classList.remove("outRange");
-      }
-    }
-  });
 
-}
+
 class Ship {
   constructor(length) {
     this.length = length;
@@ -111,31 +58,235 @@ class Gameboard {
       console.log("miss");
     }
   }
-  addShip(ship, row, column, direction) {
+  addShip(ship, row, column, direction, id) {
     for (let i = 0; i < ship.length; i++) {
       if (direction == "h") {
-        this.board[row][column + i] = 1;
+        this.board[row][column + i] = id;
       } else {
-        this.board[row + i][column] = 1;
+        this.board[row + i][column] = id;
       }
     }
     console.log(this.board);
   }
 }
 const myGameboard = new Gameboard();
+
+//myGameboard.addShip(ships[1], (row = 4), (column = 0), "v");
+//myGameboard.addShip(new Ship(4), (row = 0), (column = 0), "h");
+myGameboard.receiveAttack(0, 0);
+//console.log(myGameboard.board);
+
+
 ship1 = new Ship(5); //Carrier
 ship2 = new Ship(4); //Battleship
 ship3 = new Ship(3); //Cruiser
 ship4 = new Ship(3); //Submarine
 ship5 = new Ship(2); //Destroyer
+
 let ships = {
-    1 : ship1,
-    2 : ship2,
-    3 : ship3,
-    4 : ship4,
-    5 : ship5
+  1 : ship1,
+  2 : ship2,
+  3 : ship3,
+  4 : ship4,
+  5 : ship5
 };
-myGameboard.addShip(ships[1], (row = 4), (column = 0), "v");
-myGameboard.addShip(new Ship(4), (row = 0), (column = 0), "h");
-myGameboard.receiveAttack(0, 0);
-//console.log(myGameboard.board);
+
+let ALL_SHIPS_INF = {
+  1 : {
+    ship: null,
+    row: null,
+    column: null,
+    direction: null,
+    id: null
+  },
+  2 : {
+    ship: null,
+    row: null,
+    column: null,
+    direction: null,
+    id: null
+  },
+  3 : {
+    ship: null,
+    row: null,
+    column: null,
+    direction: null,
+    id: null
+  },
+  4 : {
+    ship: null,
+    row: null,
+    column: null,
+    direction: null,
+    id: null
+  },
+  5 : {
+    ship: null,
+    row: null,
+    column: null,
+    direction: null,
+    id: null
+  }
+}
+
+const CELLS = document.querySelectorAll(".cell");
+
+function startingDrag(ship){
+  ship.classList.add("dragging");
+  const dragginShip = document.querySelector(".dragging");
+    setTimeout(() => {
+        dragginShip.classList.add('dragging');
+        dragginShip.style.pointerEvents = 'none'; // Desactiva los eventos del puntero para el elemento arrastrado
+      }, 0);
+}
+function dragEnding(ship){
+  ship.classList.remove("dragging");
+  ship.style.pointerEvents = '';
+}
+//add event listeners to all ships
+carrierSVG.addEventListener("dragstart", () => {
+  curShip = carrierSVG;
+  curShipLen = 5;
+  curShipID = 1;
+  startingDrag(carrierSVG);
+});
+carrierSVG.addEventListener("dragend", () => {
+  dragEnding(carrierSVG);
+});
+
+
+battleshipSVG.addEventListener("dragstart", () => {
+  curShip = battleshipSVG;
+  curShipLen = 4;
+  curShipID = 2;
+  startingDrag(battleshipSVG);
+});
+battleshipSVG.addEventListener("dragend", () => {
+  dragEnding(battleshipSVG);
+});
+
+
+cruiserSVG.addEventListener("dragstart", () => {
+  curShip = cruiserSVG;
+  curShipLen = 3;
+  curShipID = 3;
+  startingDrag(cruiserSVG);
+});
+cruiserSVG.addEventListener("dragend", () => {  
+  dragEnding(cruiserSVG);
+});
+
+
+submarineSVG.addEventListener("dragstart", () => {
+  curShip = submarineSVG;
+  curShipLen = 3;
+  curShipID = 4;
+  startingDrag(submarineSVG);
+});
+submarineSVG.addEventListener("dragend", () => {
+  dragEnding(submarineSVG);
+});
+
+
+destroyerSVG.addEventListener("dragstart", () => {
+  curShip = destroyerSVG;
+  curShipLen = 2;
+  curShipID = 5;
+  startingDrag(destroyerSVG);
+});
+destroyerSVG.addEventListener("dragend", () => {
+  dragEnding(destroyerSVG);
+});
+
+
+//add event listeners to cells
+function checkIfCanDrop(length, pos){
+  let f = pos;
+  for (let i = 0; i < length; i++) {
+    if(CELLS[f] != null){
+      f+=10;
+    }else{
+      return false;
+    }
+  }
+  return true;
+}
+//
+let actualCubes = [];
+let errorCubes = [];
+let canDrop = true;
+function highLightCells(length, pos){
+  let f = pos;
+  for (let i = 0; i < length; i++) {
+    actualCubes.push(f);
+    CELLS[f].classList.add("colorChange");
+    f+=10;
+  }
+}
+for(let i = 0; i < CELLS.length; i++) {
+  CELLS[i].addEventListener("dragover", (e) => {
+    e.preventDefault();
+    canDrop = true;
+    let f = i;
+    actualCubes = [];
+    console.log(checkIfCanDrop(curShipLen, i));
+    if(checkIfCanDrop(curShipLen, i)){
+      highLightCells(curShipLen, i);
+      canDrop = true;
+    }else{
+      //Highlight the cells that are out of range
+      canDrop = false;
+      errorCubes = [];
+      let k=i;
+      while(CELLS[k] != null){
+        errorCubes.push(k);
+        CELLS[k].classList.add("outRange");
+        k+=10;
+      }
+
+    }
+  });
+
+  //Remove the highlight
+  function removeHighlight(){
+    for(let i = 0; i < actualCubes.length; i++){
+      CELLS[actualCubes[i]].classList.remove("colorChange");
+    }
+  }
+
+  function removeErrorHighlight(){
+    for(let i = 0; i < errorCubes.length; i++){
+      CELLS[errorCubes[i]].classList.remove("outRange");
+    }
+  }
+//Remove the highlight when the mouse leaves the cell
+  CELLS[i].addEventListener("dragleave", () => {
+    removeHighlight();
+    removeErrorHighlight();
+  });
+  
+  CELLS[i].addEventListener("drop", () => {
+    if(canDrop == true){
+      myGameboard.addShip(ships[curShipID], row = Math.floor(i/10), column = Math.floor(i%10), "v", curShipID);
+      CELLS[i].classList.add("inFront");
+      if(prevInfront != null && myGameboard.board[Math.floor(prevInfront/10)][Math.floor(prevInfront%10)] == 0){
+        CELLS[prevInfront].classList.remove("inFront");
+      }
+      prevInfront = i;
+      if(ALL_SHIPS_INF[curShipID].id != null){
+        myGameboard.addShip(ALL_SHIPS_INF[curShipID].ship, ALL_SHIPS_INF[curShipID].row, ALL_SHIPS_INF[curShipID].column, ALL_SHIPS_INF[curShipID].direction, 0);
+      }
+      ALL_SHIPS_INF[curShipID] = {
+        ship: ships[curShipID],
+        row: Math.floor(i/10),
+        column: Math.floor(i%10),
+        direction: "v",
+        id: curShipID
+      }
+      CELLS[i].appendChild(curShip);
+      removeHighlight();
+    }else{
+      removeErrorHighlight();
+    }
+  });
+}

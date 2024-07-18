@@ -31,8 +31,8 @@ body{
     display: flex;
     justify-items: center;
     text-align: center;
-    flex-direction: column;
-    justify-content: center;
+    flex-direction: column-reverse;
+    justify-content: end;
     font-family: "Pixelify Sans", sans-serif;
     font-optical-sizing: auto;
     font-style: normal;
@@ -60,6 +60,8 @@ body{
 }
 
 .cell {
+    display: flex;
+    justify-content: center;
     background-color: #9ce3ff;
     border: 1px solid #7999fa;
 }
