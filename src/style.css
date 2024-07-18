@@ -47,6 +47,7 @@ body{
     border-radius: .1rem;
 }
 .carrierSVG{
+    /*transform: rotate(90deg);*/
     height: 245px;
 }
 .battleshipSVG{

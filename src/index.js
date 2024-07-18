@@ -10,10 +10,8 @@ let curShipID = 1;
 let curShipLen = 5;
 
 
-let prevInfront = null;
-let prevShip_INF = null;
-
-
+let curFront = null;
+let prevID = null;
 
 class Ship {
   constructor(length) {
@@ -133,6 +131,14 @@ const CELLS = document.querySelectorAll(".cell");
 
 function startingDrag(ship){
   ship.classList.add("dragging");
+  
+  if(curFront != null){
+    //CELLS[curFront].removeChild(ship);
+    
+    if(curShipID == prevID){
+      CELLS[curFront].classList.remove("inFront");
+    }
+  }
   const dragginShip = document.querySelector(".dragging");
     setTimeout(() => {
         dragginShip.classList.add('dragging');
@@ -203,7 +209,7 @@ destroyerSVG.addEventListener("dragend", () => {
 function checkIfCanDrop(length, pos){
   let f = pos;
   for (let i = 0; i < length; i++) {
-    if(CELLS[f] != null){
+    if(CELLS[f] != null && myGameboard.board[Math.floor(f/10)][Math.floor(f%10)] == 0){
       f+=10;
     }else{
       return false;
@@ -238,7 +244,7 @@ for(let i = 0; i < CELLS.length; i++) {
       canDrop = false;
       errorCubes = [];
       let k=i;
-      while(CELLS[k] != null){
+      while(CELLS[k] != null && myGameboard.board[Math.floor(k/10)][Math.floor(k%10)] == 0){
         errorCubes.push(k);
         CELLS[k].classList.add("outRange");
         k+=10;
@@ -269,10 +275,7 @@ for(let i = 0; i < CELLS.length; i++) {
     if(canDrop == true){
       myGameboard.addShip(ships[curShipID], row = Math.floor(i/10), column = Math.floor(i%10), "v", curShipID);
       CELLS[i].classList.add("inFront");
-      if(prevInfront != null && myGameboard.board[Math.floor(prevInfront/10)][Math.floor(prevInfront%10)] == 0){
-        CELLS[prevInfront].classList.remove("inFront");
-      }
-      prevInfront = i;
+      curFront = i;
       if(ALL_SHIPS_INF[curShipID].id != null){
         myGameboard.addShip(ALL_SHIPS_INF[curShipID].ship, ALL_SHIPS_INF[curShipID].row, ALL_SHIPS_INF[curShipID].column, ALL_SHIPS_INF[curShipID].direction, 0);
       }
@@ -283,6 +286,8 @@ for(let i = 0; i < CELLS.length; i++) {
         direction: "v",
         id: curShipID
       }
+      prevID = curShipID;
+
       CELLS[i].appendChild(curShip);
       removeHighlight();
     }else{
