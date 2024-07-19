@@ -10,9 +10,6 @@ let curShipID = 1;
 let curShipLen = 5;
 
 
-let curFront = null;
-let prevID = null;
-
 class Ship {
   constructor(length) {
     this.length = length;
@@ -95,6 +92,8 @@ let ALL_SHIPS_INF = {
     row: null,
     column: null,
     direction: null,
+    curPOS: null,
+    prevPOS: null,
     id: null
   },
   2 : {
@@ -130,15 +129,15 @@ let ALL_SHIPS_INF = {
 const CELLS = document.querySelectorAll(".cell");
 
 function startingDrag(ship){
-  ship.classList.add("dragging");
-  
-  if(curFront != null){
-    //CELLS[curFront].removeChild(ship);
-    
-    if(curShipID == prevID){
-      CELLS[curFront].classList.remove("inFront");
-    }
+  console.log(ALL_SHIPS_INF[curShipID]);
+  ALL_SHIPS_INF[curShipID].prevPOS = ALL_SHIPS_INF[curShipID].curPOS;
+  if(ALL_SHIPS_INF[curShipID].curPOS!=null){
+    ship.classList.add("hidden");
   }
+  if(ALL_SHIPS_INF[curShipID].prevPOS!=null){
+    CELLS[ALL_SHIPS_INF[curShipID].prevPOS].classList.remove("inFront");
+  }
+  ship.classList.add("dragging");
   const dragginShip = document.querySelector(".dragging");
     setTimeout(() => {
         dragginShip.classList.add('dragging');
@@ -146,8 +145,12 @@ function startingDrag(ship){
       }, 0);
 }
 function dragEnding(ship){
+  ship.classList.remove("hidden");
   ship.classList.remove("dragging");
   ship.style.pointerEvents = '';
+  if(ALL_SHIPS_INF[curShipID].curPOS!=null){
+    CELLS[ALL_SHIPS_INF[curShipID].curPOS].classList.add("inFront");
+  }
 }
 //add event listeners to all ships
 carrierSVG.addEventListener("dragstart", () => {
@@ -209,7 +212,7 @@ destroyerSVG.addEventListener("dragend", () => {
 function checkIfCanDrop(length, pos){
   let f = pos;
   for (let i = 0; i < length; i++) {
-    if(CELLS[f] != null && myGameboard.board[Math.floor(f/10)][Math.floor(f%10)] == 0){
+    if(CELLS[f] != null && (myGameboard.board[Math.floor(f/10)][Math.floor(f%10)] == 0 || myGameboard.board[Math.floor(f/10)][Math.floor(f%10)] == curShipID)){
       f+=10;
     }else{
       return false;
@@ -275,7 +278,6 @@ for(let i = 0; i < CELLS.length; i++) {
     if(canDrop == true){
       myGameboard.addShip(ships[curShipID], row = Math.floor(i/10), column = Math.floor(i%10), "v", curShipID);
       CELLS[i].classList.add("inFront");
-      curFront = i;
       if(ALL_SHIPS_INF[curShipID].id != null){
         myGameboard.addShip(ALL_SHIPS_INF[curShipID].ship, ALL_SHIPS_INF[curShipID].row, ALL_SHIPS_INF[curShipID].column, ALL_SHIPS_INF[curShipID].direction, 0);
       }
@@ -286,9 +288,10 @@ for(let i = 0; i < CELLS.length; i++) {
         direction: "v",
         id: curShipID
       }
-      prevID = curShipID;
-
+      ALL_SHIPS_INF[curShipID].curPOS = i;
+      CELLS[i].classList.add("inFront");
       CELLS[i].appendChild(curShip);
+      curShip.classList.remove("hidden");
       removeHighlight();
     }else{
       removeErrorHighlight();

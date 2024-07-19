@@ -82,3 +82,6 @@ body{
 .inFront{
     z-index: 5;
 }
+.hidden {
+    opacity: 20%;
+}
