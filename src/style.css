@@ -85,3 +85,6 @@ body{
 .hidden {
     opacity: 20%;
 }
+.rotate{
+    transform: rotate(-90deg);
+}
