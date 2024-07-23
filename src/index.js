@@ -9,7 +9,7 @@ let curShip = carrierSVG;
 let curShipID = 1;
 let curShipLen = 5;
 let curDirection = "v";
-
+const TOGGLE_INTERVAL = 340; // Interval in milliseconds
 
 class Ship {
   constructor(length) {
@@ -170,14 +170,18 @@ carrierSVG.addEventListener("dragstart", (event) => {
   
 });
 //DRAG EVENT
+let carrierLastToggleTime = 0;
 carrierSVG.addEventListener('drag', (event) => {
-  if (event.shiftKey) {
-    if(curDirection == "v"){
+  const currentTime = Date.now();
+  if (event.shiftKey && currentTime - carrierLastToggleTime > TOGGLE_INTERVAL) {
+    carrierLastToggleTime = currentTime;
+    if (curDirection == "v") {
       curDirection = "h";
-    }else{
+    } else {
       curDirection = "v";
     }
     removeHighlight();
+    removeErrorHighlight();
     console.log(curDirection);
   }
 });
@@ -195,17 +199,22 @@ battleshipSVG.addEventListener("dragstart", () => {
   startingDrag(battleshipSVG);
 });
 //DRAG EVENT
+let battleshipLastToggleTime = 0;
 battleshipSVG.addEventListener('drag', (event) => {
-  if (event.shiftKey) {
-    if(curDirection == "v"){
+  const currentTime = Date.now();
+  if (event.shiftKey && currentTime - battleshipLastToggleTime > TOGGLE_INTERVAL) {
+    battleshipLastToggleTime = currentTime;
+    if (curDirection == "v") {
       curDirection = "h";
-    }else{
+    } else {
       curDirection = "v";
     }
     removeHighlight();
+    removeErrorHighlight();
     console.log(curDirection);
   }
 });
+
 battleshipSVG.addEventListener("dragend", () => {
   dragEnding(battleshipSVG);
 });
@@ -218,14 +227,18 @@ cruiserSVG.addEventListener("dragstart", () => {
   startingDrag(cruiserSVG);
 });
 //DRAG EVENT
+let cruiserLastToggleTime = 0;
 cruiserSVG.addEventListener('drag', (event) => {
-  if (event.shiftKey) {
-    if(curDirection == "v"){
+  const currentTime = Date.now();
+  if (event.shiftKey && currentTime - cruiserLastToggleTime > TOGGLE_INTERVAL) {
+    cruiserLastToggleTime = currentTime;
+    if (curDirection == "v") {
       curDirection = "h";
-    }else{
+    } else {
       curDirection = "v";
     }
     removeHighlight();
+    removeErrorHighlight();
     console.log(curDirection);
   }
 });
@@ -240,18 +253,24 @@ submarineSVG.addEventListener("dragstart", () => {
   curShipID = 4;
   startingDrag(submarineSVG);
 });
+
 //DRAG EVENT
+let SubMarineLastToggleTime = 0;
 submarineSVG.addEventListener('drag', (event) => {
-  if (event.shiftKey) {
-    if(curDirection == "v"){
+  const currentTime = Date.now();
+  if (event.shiftKey && currentTime - SubMarineLastToggleTime > TOGGLE_INTERVAL) {
+    SubMarineLastToggleTime = currentTime;
+    if (curDirection == "v") {
       curDirection = "h";
-    }else{
+    } else {
       curDirection = "v";
     }
     removeHighlight();
+    removeErrorHighlight();
     console.log(curDirection);
   }
 });
+
 submarineSVG.addEventListener("dragend", () => {
   dragEnding(submarineSVG);
 });
@@ -264,14 +283,18 @@ destroyerSVG.addEventListener("dragstart", () => {
   startingDrag(destroyerSVG);
 });
 //DRAG EVENT
+let destroyerLastToggleTime = 0;
 destroyerSVG.addEventListener('drag', (event) => {
-  if (event.shiftKey) {
-    if(curDirection == "v"){
+  const currentTime = Date.now();
+  if (event.shiftKey && currentTime - destroyerLastToggleTime > TOGGLE_INTERVAL) {
+    destroyerLastToggleTime = currentTime;
+    if (curDirection == "v") {
       curDirection = "h";
-    }else{
+    } else {
       curDirection = "v";
     }
     removeHighlight();
+    removeErrorHighlight();
     console.log(curDirection);
   }
 });
@@ -294,6 +317,14 @@ function checkIfCanDrop(length, pos, direction){
     }
     return true;
   }else{
+    console.log("pos: " + pos + "   length: " + length);
+    if(pos + length > 100){
+      console.log("FALSE");
+      return false;
+    }
+    if(myGameboard.board[Math.floor(pos/10)][Math.floor(pos%10)] != 0 && myGameboard.board[Math.floor(pos/10)][Math.floor(pos%10)] != curShipID){
+      return false;
+    }
     if(pos.toString()[pos.toString().length-1] == "9"){
       return false;
     }else{
@@ -330,6 +361,7 @@ function highLightCells(length, pos, direction){
   }
 }
 function highErrorCells(pos, direction){
+  console.log("CANT PLACE HERE");
   if(direction == "v"){
     let i=pos;
     while(CELLS[i] != null && myGameboard.board[Math.floor(i/10)][Math.floor(i%10)] == 0){
@@ -339,10 +371,16 @@ function highErrorCells(pos, direction){
     }
   }else{
     let i = pos;
-    while(CELLS[i] != null && i.toString()[i.toString().length-1]!="0" && (myGameboard.board[Math.floor(i/10)][Math.floor(i%10)] == 0) || myGameboard.board[Math.floor(i/10)][Math.floor(i%10)] == curShipID){
-      errorCubes.push(i);
-      CELLS[i].classList.add("outRange");
-      i++;
+    let column = Math.floor(i%10);
+    let row = Math.floor(i/10);
+    console.log("x:" + column + " y:" + row + " [" +myGameboard.board[column][row]  + "]");
+    while(CELLS[i] != null && i.toString()[i.toString().length-1]!="0" && (myGameboard.board[row][column] == 0 || myGameboard.board[column][row] == curShipID)){
+        errorCubes.push(i);
+        CELLS[i].classList.add("outRange");
+        i++;
+        console.log("x:" + column + " y:" + row + " [" +myGameboard.board[column][row]  + "]");
+        column = Math.floor(i%10);
+        row = Math.floor(i/10);
     }
   }
 }
@@ -372,6 +410,7 @@ for(let i = 0; i < CELLS.length; i++) {
   }
 
   function removeErrorHighlight(){
+    console.log("ERROR CUBES", errorCubes);
     for(let i = 0; i < errorCubes.length; i++){
       CELLS[errorCubes[i]].classList.remove("outRange");
     }
@@ -384,11 +423,11 @@ for(let i = 0; i < CELLS.length; i++) {
   
   CELLS[i].addEventListener("drop", () => {
     if(canDrop == true){
-      myGameboard.addShip(ships[curShipID], row = Math.floor(i/10), column = Math.floor(i%10), curDirection, curShipID);
-      CELLS[i].classList.add("inFront");
       if(ALL_SHIPS_INF[curShipID].id != null){
         myGameboard.addShip(ALL_SHIPS_INF[curShipID].ship, ALL_SHIPS_INF[curShipID].row, ALL_SHIPS_INF[curShipID].column, ALL_SHIPS_INF[curShipID].direction, 0);
       }
+      myGameboard.addShip(ships[curShipID], row = Math.floor(i/10), column = Math.floor(i%10), curDirection, curShipID);
+      CELLS[i].classList.add("inFront");
       ALL_SHIPS_INF[curShipID] = {
         ship: ships[curShipID],
         row: Math.floor(i/10),
