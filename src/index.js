@@ -7,6 +7,7 @@ const submarineSVG = document.querySelector(".submarineSVG");
 const destroyerSVG = document.querySelector(".destroyerSVG");
 
 const resetBTN = document.querySelector(".reset");
+const readyBTN = document.querySelector(".ready");
 
 let curShip = carrierSVG;
 let curShipID = 1;
@@ -147,6 +148,45 @@ function resetShips(){
     CELLS[i].classList.remove("outRange");
     CELLS[i].innerHTML = "";
   }
+  ALL_SHIPS_INF = {
+    1 : {
+      ship: null,
+      row: null,
+      column: null,
+      direction: null,
+      curPOS: null,
+      prevPOS: null,
+      id: null
+    },
+    2 : {
+      ship: null,
+      row: null,
+      column: null,
+      direction: null,
+      id: null
+    },
+    3 : {
+      ship: null,
+      row: null,
+      column: null,
+      direction: null,
+      id: null
+    },
+    4 : {
+      ship: null,
+      row: null,
+      column: null,
+      direction: null,
+      id: null
+    },
+    5 : {
+      ship: null,
+      row: null,
+      column: null,
+      direction: null,
+      id: null
+    }
+  }
   myGameboard.board  = [
     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
@@ -163,6 +203,27 @@ function resetShips(){
 
 }
 resetBTN.addEventListener("click", resetShips);
+
+function checkShipsOnBoard(){
+  for(let i = 1; i < 6; i++){
+    if(ALL_SHIPS_INF[i].curPOS == null){
+      return false;
+    }
+  }
+  return true;
+}
+function ready(){
+  if(checkShipsOnBoard()){
+    console.log("READY");
+    console.log("FINAL BOARD:");
+    console.log(myGameboard.board);
+  }else{
+    console.log("NOT READY");
+  }
+  
+}
+readyBTN.addEventListener("click", ready);
+
 
 function startingDrag(ship){
   console.log(ALL_SHIPS_INF[curShipID]);
