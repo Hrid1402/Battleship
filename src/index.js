@@ -5,6 +5,9 @@ const battleshipSVG = document.querySelector(".battleshipSVG");
 const cruiserSVG = document.querySelector(".cruiserSVG");
 const submarineSVG = document.querySelector(".submarineSVG");
 const destroyerSVG = document.querySelector(".destroyerSVG");
+
+const resetBTN = document.querySelector(".reset");
+
 let curShip = carrierSVG;
 let curShipID = 1;
 let curShipLen = 5;
@@ -128,6 +131,38 @@ let ALL_SHIPS_INF = {
 }
 
 const CELLS = document.querySelectorAll(".cell");
+//RESET
+function resetShips(){
+  console.log("RESET");
+  const shipBlocks = document.querySelectorAll(".shipBLOCK");
+  shipBlocks[0].appendChild(carrierSVG); 
+  shipBlocks[1].appendChild(battleshipSVG);
+  shipBlocks[2].appendChild(cruiserSVG);
+  shipBlocks[3].appendChild(submarineSVG);
+  shipBlocks[4].appendChild(destroyerSVG);
+  for(let i = 0; i < CELLS.length; i++){
+    CELLS[i].classList.remove("inFront");
+    CELLS[i].classList.remove("rotate");
+    CELLS[i].classList.remove("colorChange");
+    CELLS[i].classList.remove("outRange");
+    CELLS[i].innerHTML = "";
+  }
+  myGameboard.board  = [
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+  ];
+  console.log(myGameboard.board);
+
+}
+resetBTN.addEventListener("click", resetShips);
 
 function startingDrag(ship){
   console.log(ALL_SHIPS_INF[curShipID]);

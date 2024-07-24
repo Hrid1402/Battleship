@@ -58,12 +58,12 @@ body{
 }
 .boatsPicker{
     display: flex;
-    gap: 45px;
+    gap: 25px;
     flex-direction: row;
     padding: 35px;
     justify-items: center;
     justify-content: space-around;
-    background-color: white;
+    border: white 2px solid;
 }
 .boatsPicker .shipBLOCK{
     display: flex;
@@ -87,6 +87,29 @@ body{
     font-style: normal; 
     margin: 0;
 }
+.buttons{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    margin-top: 25px;   
+}
+.buttons .reset, .buttons .ready{
+    font-weight: bolder;
+    font-family: "VT323", monospace;    
+    font-style: normal; 
+    margin: 5px;
+}
+
+.buttons .ready{
+    padding: 25px 55px;
+    font-size: 30px;
+}
+.buttons .reset{
+    padding: 15px 40px;
+    font-size: 30px;
+}
+
 .board {
     display: grid;
     grid-template-columns: repeat(10, 3.25rem);
