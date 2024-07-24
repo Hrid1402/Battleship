@@ -1,22 +1,60 @@
-@import url('https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@400..700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=VT323&display=swap');
 body{
-    background-color: beige;  
+    background-color: #70A8FE;  
     margin: 0;
 }
 .title{
+    display: flex;
+    justify-content: center;
     background-color: rgb(194, 194, 194);
     margin: 0;
     padding: 5px;
-    font-family: "Pixelify Sans", sans-serif;
-    font-optical-sizing: auto;
-    font-size: 55px;
+    font-family: "VT323", monospace;
+    font-weight: 400;
+    font-style: normal;
+    font-size: 65px;
     margin-bottom: 20px;
+    margin: 0;
 }
 .mainBoard{
+    margin-top: 25px;
     display: flex;
     flex-direction: row;
     justify-content: space-around;
-    background-color: bisque;
+}
+.gameboard .topLetters{
+    display: grid;
+    grid-template-columns: repeat(10, 3.25rem);
+    margin-left: 50px;
+}
+.bottom{
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+}
+.bottom .leftNumbers{
+    display: grid;
+    grid-template-rows: repeat(10, 3.25rem);
+    margin-right: 20px;
+}
+.bottom .leftNumbers p{
+    display: flex;
+    justify-content: end;
+    align-items: center;
+    font-weight: 400;
+    font-family: "VT323", monospace;
+    margin: 0;
+    font-size: 30px;
+}
+.gameboard .topLetters p{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-weight: 400;
+    font-family: "VT323", monospace;
+    font-size: 30px;
+    margin-bottom: 15px;
 }
 .boatsPicker{
     display: flex;
@@ -33,28 +71,37 @@ body{
     text-align: center;
     flex-direction: column-reverse;
     justify-content: end;
-    font-family: "Pixelify Sans", sans-serif;
-    font-optical-sizing: auto;
-    font-style: normal;
     
+}
+.boatsPicker .shipBLOCK .shipName{
+    font-weight: bolder;
+    font-family: "VT323", monospace;    
+    font-size: 30px;
+    font-style: normal; 
+    margin: 15px;
+}
+.boatsPicker .shipBLOCK .tiles{
+    font-weight: 400;
+    font-family: "VT323", monospace;
+    font-size: 30px;
+    font-style: normal; 
+    margin: 0;
 }
 .board {
     display: grid;
     grid-template-columns: repeat(10, 3.25rem);
     grid-template-rows: repeat(10, 3.25rem);
-    background-color: #3e70dc;
-    padding: 10px;
+    border: white 2px solid;
     border-radius: .1rem;
 }
 .carrierSVG{
-    /*transform: rotate(90deg);*/
-    height: 245px;
+    height: 257px;
 }
 .battleshipSVG{
-    height: 196px;
+    height: 207px;
 }
 .cruiserSVG, .submarineSVG{
-    height: 147px;
+    height: 154px;
 }
 .destroyerSVG{
     height: 98px;
@@ -63,11 +110,7 @@ body{
 .cell {
     display: flex;
     justify-content: center;
-    background-color: #9ce3ff;
-    border: 1px solid #7999fa;
-}
-.cell:hover{
-    /*background-color: #0041ba;*/
+    border: rgb(209, 221, 253) 1px solid;
 }
 .boatsPicker .shipBLOCK .dragging{
     filter: invert(47%) sepia(93%) saturate(1346%) hue-rotate(159deg) brightness(91%) contrast(101%);
