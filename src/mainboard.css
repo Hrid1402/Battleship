@@ -1,4 +1,10 @@
 @import url('https://fonts.googleapis.com/css2?family=VT323&display=swap');
+.boards{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+}
+
 .P_board{
     display: flex;
     flex-direction: column;
@@ -47,5 +53,91 @@
     border-radius: .1rem;
 }
 .P_board .P_board_grid .P_cell{
+    border: white 1px solid;
+}
+.P_board .P_bottom .P_text{
+    display: flex;
+    align-self: flex-start;
+    font-family: "VT323", monospace;
+    font-weight: 400;
+    font-style: normal;
+    font-size: 40px;
+    margin: 0;
+}
+.P_board .P_bottom .P_shipsHolder{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+    gap: 10px;
+}
+.P_board .P_bottom{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    width: 80%;
+    margin-top: 20px;
+}
+.carrierICON{
+    height: 136px;
+}
+.battleshipICON{
+    height: 108.8px;
+}
+.cruiserICON, .submarineICON{
+    height: 81.6px;
+}
+.destroyerICON{
+    height: 54.4px;
+}
+/*------------------------------------------------/*/
+
+.CPU_board{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+.CPU_board .CPU_board_letters{
+    display: grid;
+    grid-template-columns: repeat(10, 3.25rem);
+    margin-left: 25px;
+}
+.CPU_board .CPU_board_letters p{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-family: "VT323", monospace;
+    font-weight: 400;
+    font-style: normal;
+    font-size: 30px;
+    margin-bottom: 5px;
+}
+.CPU_board .CPU_middle{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+.CPU_board .CPU_board_numbers{
+    display: grid;
+    margin-right: 5px;
+    grid-template-rows: repeat(10, 3.25rem);
+}
+.CPU_board .CPU_board_numbers p{
+    font-family: "VT323", monospace;
+    font-weight: 400;
+    font-style: normal;
+    font-size: 30px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.CPU_board .CPU_board_grid{
+    display: grid;
+    grid-template-columns: repeat(10, 3.25rem);
+    grid-template-rows: repeat(10, 3.25rem);
+    border: white 2px solid;
+    border-radius: .1rem;
+}
+.CPU_board .CPU_board_grid .CPU_cell{
     border: white 1px solid;
 }

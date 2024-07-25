@@ -171,14 +171,14 @@ body{
     border: rgb(209, 221, 253) 1px solid;
 }
 .boatsPicker .shipBLOCK .dragging{
-    filter: invert(47%) sepia(93%) saturate(1346%) hue-rotate(159deg) brightness(91%) contrast(101%);
+    opacity: 0%;
 }
 .outRange{
-    background-color: red
+    background-color: rgb(236, 102, 102)
 
 }
 .colorChange{
-    background-color: rgb(164, 170, 187);
+    background-color: #5c5c5c;
 }
 .inFront{
     z-index: 5;

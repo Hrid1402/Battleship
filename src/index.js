@@ -232,6 +232,67 @@ function checkShipsOnBoard(){
   }
   return true;
 }
+//ENEMYY
+function getRandomInt(min, max) {
+  return Math.floor(Math.random() * (max - min + 1)) + min;
+}
+function canPlaceEnemyShip(board, len, axis, x, y){
+  console.log(x, y, "axis:", axis);
+  for (let i = 0; i < len; i++) {
+    if (axis == 1) {
+      //vertical
+      if((y+i) > 9 || board[x][y + i] == null || board[x][y + i] != 0){
+        return false;
+      } 
+    }else if((x+i) > 9 || board[x + i][y] == null || board[x + i][y] != 0){
+      return false;
+    }
+  }
+  return true;
+};
+function addEnemyShip(board, len, axis, x, y, shipID){
+  for (let i = 0; i < len; i++) {
+    if (axis == 1) {
+      //vertical
+      board[x][y + i] = shipID;
+    } else {
+      board[x + i][y] = shipID;
+    }
+  }
+};
+function addRandomeEnemyShips(board, len, id){
+  let x = getRandomInt(0,9);
+  let y = getRandomInt(0,9);
+  let axis = getRandomInt(0,1); // x = 1, y = 0
+  while(!canPlaceEnemyShip(board, 5, axis, x, y)){
+    x = getRandomInt(0,9);
+    y = getRandomInt(0,9);
+    axis = getRandomInt(0,1);
+  }
+  addEnemyShip(board, len, axis, x, y, id);
+}
+function placeEnemyShips(){
+  let board = [
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+  ];
+  addRandomeEnemyShips(board, 5, 1); //adding carrier
+  addRandomeEnemyShips(board, 4, 2); //adding battleship
+  addRandomeEnemyShips(board, 3, 3); //adding cruiser
+  addRandomeEnemyShips(board, 3, 4); //adding submarine
+  addRandomeEnemyShips(board, 2, 5); //adding destroyer
+  return board;
+};
+console.log("ENEMY BOARD:");
+console.log(placeEnemyShips());
 function ready(){
   if(checkShipsOnBoard()){
     console.log("READY");
@@ -302,7 +363,6 @@ carrierSVG.addEventListener('drag', (event) => {
     }
     removeHighlight();
     removeErrorHighlight();
-    console.log(curDirection);
   }
 });
 
@@ -331,7 +391,6 @@ battleshipSVG.addEventListener('drag', (event) => {
     }
     removeHighlight();
     removeErrorHighlight();
-    console.log(curDirection);
   }
 });
 
@@ -359,7 +418,6 @@ cruiserSVG.addEventListener('drag', (event) => {
     }
     removeHighlight();
     removeErrorHighlight();
-    console.log(curDirection);
   }
 });
 cruiserSVG.addEventListener("dragend", () => {  
@@ -387,7 +445,6 @@ submarineSVG.addEventListener('drag', (event) => {
     }
     removeHighlight();
     removeErrorHighlight();
-    console.log(curDirection);
   }
 });
 
@@ -415,7 +472,6 @@ destroyerSVG.addEventListener('drag', (event) => {
     }
     removeHighlight();
     removeErrorHighlight();
-    console.log(curDirection);
   }
 });
 destroyerSVG.addEventListener("dragend", () => {
@@ -425,7 +481,6 @@ destroyerSVG.addEventListener("dragend", () => {
 
 //add event listeners to cells
 function checkIfCanDrop(length, pos, direction){
-  console.log("CURRENT DIRECTION: " + direction);
   if(direction == "v"){
     let f = pos;
     for (let i = 0; i < length; i++) {
@@ -437,9 +492,7 @@ function checkIfCanDrop(length, pos, direction){
     }
     return true;
   }else{
-    console.log("pos: " + pos + "   length: " + length);
     if(pos + length > 100){
-      console.log("FALSE");
       return false;
     }
     if(myGameboard.board[Math.floor(pos/10)][Math.floor(pos%10)] != 0 && myGameboard.board[Math.floor(pos/10)][Math.floor(pos%10)] != curShipID){
@@ -481,7 +534,6 @@ function highLightCells(length, pos, direction){
   }
 }
 function highErrorCells(pos, direction){
-  console.log("CANT PLACE HERE");
   if(direction == "v"){
     let i=pos;
     while(CELLS[i] != null && myGameboard.board[Math.floor(i/10)][Math.floor(i%10)] == 0){
@@ -493,12 +545,10 @@ function highErrorCells(pos, direction){
     let i = pos;
     let column = Math.floor(i%10);
     let row = Math.floor(i/10);
-    console.log("x:" + column + " y:" + row + " [" +myGameboard.board[column][row]  + "]");
     while(CELLS[i] != null && i.toString()[i.toString().length-1]!="0" && (myGameboard.board[row][column] == 0 || myGameboard.board[column][row] == curShipID)){
         errorCubes.push(i);
         CELLS[i].classList.add("outRange");
         i++;
-        console.log("x:" + column + " y:" + row + " [" +myGameboard.board[column][row]  + "]");
         column = Math.floor(i%10);
         row = Math.floor(i/10);
     }
@@ -530,7 +580,6 @@ for(let i = 0; i < CELLS.length; i++) {
   }
 
   function removeErrorHighlight(){
-    console.log("ERROR CUBES", errorCubes);
     for(let i = 0; i < errorCubes.length; i++){
       CELLS[errorCubes[i]].classList.remove("outRange");
     }
