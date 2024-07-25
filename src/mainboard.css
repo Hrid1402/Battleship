@@ -1,0 +1,51 @@
+@import url('https://fonts.googleapis.com/css2?family=VT323&display=swap');
+.P_board{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+.P_board .P_board_letters{
+    display: grid;
+    grid-template-columns: repeat(10, 3.25rem);
+    margin-left: 25px;
+}
+.P_board .P_board_letters p{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-family: "VT323", monospace;
+    font-weight: 400;
+    font-style: normal;
+    font-size: 30px;
+    margin-bottom: 5px;
+}
+.P_board .P_middle{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+.P_board .P_board_numbers{
+    display: grid;
+    margin-right: 5px;
+    grid-template-rows: repeat(10, 3.25rem);
+}
+.P_board .P_board_numbers p{
+    font-family: "VT323", monospace;
+    font-weight: 400;
+    font-style: normal;
+    font-size: 30px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.P_board .P_board_grid{
+    display: grid;
+    grid-template-columns: repeat(10, 3.25rem);
+    grid-template-rows: repeat(10, 3.25rem);
+    border: white 2px solid;
+    border-radius: .1rem;
+}
+.P_board .P_board_grid .P_cell{
+    border: white 1px solid;
+}

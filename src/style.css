@@ -16,16 +16,45 @@ body{
     margin-bottom: 20px;
     margin: 0;
 }
+.gameboard{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+.text1{
+    display: flex;
+    justify-content: center;
+    font-family: "VT323", monospace;
+    font-weight: 400;
+    font-style: normal;
+    font-size: 50px;
+    margin-top: 5px;
+    margin-bottom: 0;
+}
+.text2{
+    font-family: "VT323", monospace;
+    font-weight: 400;
+    font-style: normal;
+    font-size: 30px;
+    
+}
+.text2 .shift{
+    font-family: "VT323", monospace;
+    font-weight: 400;
+    color: white;
+    font-size: 50px;
+}
 .mainBoard{
-    margin-top: 25px;
     display: flex;
     flex-direction: row;
     justify-content: space-around;
+    align-items: center;
 }
 .gameboard .topLetters{
     display: grid;
     grid-template-columns: repeat(10, 3.25rem);
-    margin-left: 50px;
+    margin-left: 45px;
 }
 .bottom{
     display: flex;
@@ -64,6 +93,7 @@ body{
     justify-items: center;
     justify-content: space-around;
     border: white 2px solid;
+    height: 350px;
 }
 .boatsPicker .shipBLOCK{
     display: flex;
@@ -71,7 +101,6 @@ body{
     text-align: center;
     flex-direction: column-reverse;
     justify-content: end;
-    
 }
 .boatsPicker .shipBLOCK .shipName{
     font-weight: bolder;
@@ -79,6 +108,12 @@ body{
     font-size: 30px;
     font-style: normal; 
     margin: 15px;
+}
+.bottomPart{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+    align-items: center;
 }
 .boatsPicker .shipBLOCK .tiles{
     font-weight: 400;
@@ -89,7 +124,7 @@ body{
 }
 .buttons{
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
     align-items: center;
     justify-content: center;
     margin-top: 25px;   
@@ -143,7 +178,7 @@ body{
 
 }
 .colorChange{
-    background-color: rgba(54, 29, 145, 0.699);
+    background-color: rgb(164, 170, 187);
 }
 .inFront{
     z-index: 5;

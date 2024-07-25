@@ -1,4 +1,7 @@
 import("./style.css");
+import("./mainboard.css");
+const { addBoards } = require("./DOM.js");
+
 console.log("Working");
 const carrierSVG = document.querySelector(".carrierSVG");
 const battleshipSVG = document.querySelector(".battleshipSVG");
@@ -6,6 +9,7 @@ const cruiserSVG = document.querySelector(".cruiserSVG");
 const submarineSVG = document.querySelector(".submarineSVG");
 const destroyerSVG = document.querySelector(".destroyerSVG");
 
+const dragShipsMenu = document.querySelector("#dragShipsMenu");
 const resetBTN = document.querySelector(".reset");
 const readyBTN = document.querySelector(".ready");
 
@@ -106,6 +110,8 @@ let ALL_SHIPS_INF = {
     row: null,
     column: null,
     direction: null,
+    curPOS: null,
+    prevPOS: null,
     id: null
   },
   3 : {
@@ -113,6 +119,8 @@ let ALL_SHIPS_INF = {
     row: null,
     column: null,
     direction: null,
+    curPOS: null,
+    prevPOS: null,
     id: null
   },
   4 : {
@@ -120,6 +128,8 @@ let ALL_SHIPS_INF = {
     row: null,
     column: null,
     direction: null,
+    curPOS: null,
+    prevPOS: null,
     id: null
   },
   5 : {
@@ -127,6 +137,8 @@ let ALL_SHIPS_INF = {
     row: null,
     column: null,
     direction: null,
+    curPOS: null,
+    prevPOS: null,
     id: null
   }
 }
@@ -163,6 +175,8 @@ function resetShips(){
       row: null,
       column: null,
       direction: null,
+      curPOS: null,
+      prevPOS: null,
       id: null
     },
     3 : {
@@ -170,6 +184,8 @@ function resetShips(){
       row: null,
       column: null,
       direction: null,
+      curPOS: null,
+      prevPOS: null,
       id: null
     },
     4 : {
@@ -177,6 +193,8 @@ function resetShips(){
       row: null,
       column: null,
       direction: null,
+      curPOS: null,
+      prevPOS: null,
       id: null
     },
     5 : {
@@ -184,6 +202,8 @@ function resetShips(){
       row: null,
       column: null,
       direction: null,
+      curPOS: null,
+      prevPOS: null,
       id: null
     }
   }
@@ -217,6 +237,10 @@ function ready(){
     console.log("READY");
     console.log("FINAL BOARD:");
     console.log(myGameboard.board);
+    console.log(ALL_SHIPS_INF);
+    dragShipsMenu.remove();
+
+    addBoards(ALL_SHIPS_INF);
   }else{
     console.log("NOT READY");
   }
