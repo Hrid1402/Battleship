@@ -365,8 +365,13 @@ function getAvaiableCells(row, column){
   }
   return attacksAvaiables;
 }
-function getRandomAvaibleAttack(attacksArray){
-  return (attacksArray.length==0) ? null : attacksArray[getRandomInt(0, attacksArray.length-1)];
+function getRandomAvaibleAttack(){
+  const randomIndex = getRandomInt(0, avaiableCells.length-1);
+  let randomCell = avaiableCells[randomIndex];
+  avaiableCells.splice(randomIndex,1);
+  console.log("SELECTED: " + randomCell.x + " " + randomCell.y);
+  console.log(avaiableCells);
+  return randomCell;
 }
 
 console.log("ENEMY BOARD:");
@@ -377,79 +382,97 @@ let realPlayer = new Player(myGameboard.board, ships);
 
 let cpuPlayer = new Player(enemyBoard, enemy_ships);
 let avaiable  = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90, 91, 92, 93, 94, 95, 96, 97, 98, 99];
-console.log(avaiable);
-console.log(avaiable.length);
 
 let nextAtack = null;
-let shipFoundPos = null;
-let curDir = null;
+
+//CPU
+let playerCELLS = getPlayerCELLS();
+let curAttackedShip = null;
+let avaiableCells = [];
+
 function cpuPlayTurn(){
   let randomPos = null;
   let row = null;
   let column = null;
-  if(nextAtack != null){
-    row = nextAtack.x;
-    column = nextAtack.y;
-    let value = ((row*10)+column);
-    randomPos = avaiable.indexOf(value);
-  }else{
-    randomPos = getRandomInt(0, avaiable.length-1);
-    let randomPosValue = avaiable[randomPos];
-    //row = Math.floor(i/10), column = Math.floor(i%10)
-    row = Math.floor(randomPosValue / 10);
-    column = Math.floor(randomPosValue % 10);
-  }
-  console.log("-------------------------------------------------")
-  const playerAttackData = realPlayer.receiveAttack(row, column);
-  let playerCELLS = getPlayerCELLS();
-  avaiable.splice(randomPos, 1);
-
-  if(playerAttackData.hit){
-    playerCELLS[((row*10)+column)].classList.add("fire");
-    if(playerAttackData.sunked){
-      let icons = getPlayerICONS();
-      console.log(icons);
-      icons[playerAttackData.id].classList.add("sunkedICON");
-      realPlayer.remainingShips--;
-      if(realPlayer.remainingShips == 0){
-        console.log("ENEMY WINS!");
-        victoryText.textContent = "Enemy won!";
-        dialog.showModal();
-      }
-      nextAtack = null;
+  
+  if(curAttackedShip == null){
+    if(nextAtack != null){
+      row = nextAtack.x;
+      column = nextAtack.y;
+      let value = ((row*10)+column);
+      randomPos = avaiable.indexOf(value);
     }else{
-      //-------------------------
-      console.log("planning...");
-      console.log("x: " + row + " y: " + column);
-      let avaiableCells = getAvaiableCells(row, column)
-      if(nextAtack==null){
-        nextAtack = getRandomAvaibleAttack(avaiableCells);
-        if(nextAtack != null){
-          console.log("nextAtack DIR = "  +  nextAtack.dir +"\nnextAtack: " + nextAtack.x + " " + nextAtack.y);
-        }
-      }else{
-        if(nextAtack.dir == "left" && nextAtack.y-1 > 0 && avaiable.includes((nextAtack.x*10)+nextAtack.y-1)){
-          nextAtack.y--;
-        }else if(nextAtack.dir == "right" && nextAtack.y+1 < 9 && avaiable.includes((nextAtack.x*10)+nextAtack.y+1)){
-          nextAtack.y++;
-        }else if(nextAtack.dir == "up" && nextAtack.x-1 > 0 && avaiable.includes(((nextAtack.x-1)*10)+nextAtack.y)){
-          nextAtack.x--;
-        }else if(nextAtack.dir == "down" && nextAtack.x+1 < 9 && avaiable.includes(((nextAtack.x+1)*10)+nextAtack.y)){
-          nextAtack.x++;
-        }
-        console.log("continue atack");
-        console.log("nextAtack DIR = "  +  nextAtack.dir +"\nnextAtack: " + nextAtack.x + " " + nextAtack.y);
-      }
-      
+      randomPos = getRandomInt(0, avaiable.length-1);
+      let randomPosValue = avaiable[randomPos];
+      //row = Math.floor(i/10), column = Math.floor(i%10)
+      row = Math.floor(randomPosValue / 10);
+      column = Math.floor(randomPosValue % 10);
     }
-      
+    console.log("-------------------------------------------------")
+    const playerAttackData = realPlayer.receiveAttack(row, column);
+    
+    avaiable.splice(randomPos, 1);
+    //CHECK
+    if(playerAttackData.hit){
+      //HIT
+      playerCELLS[((row*10)+column)].classList.add("fire");
+      if(curAttackedShip == null){
+        curAttackedShip = {row : row, column : column};
+      }
+      if(playerAttackData.sunked){
+        //To read
+        curAttackedShip = null;
+        let icons = getPlayerICONS();
+        console.log(icons);
+        icons[playerAttackData.id].classList.add("sunkedICON");
+        realPlayer.remainingShips--;
+        if(realPlayer.remainingShips == 0){
+          console.log("ENEMY WINS!");
+          victoryText.textContent = "Enemy won!";
+          dialog.showModal();
+        }
+        nextAtack = null;
+      }else{
+        //-------------------------
+        console.log("planning...");
+        console.log("x: " + row + " y: " + column);
+        avaiableCells = getAvaiableCells(curAttackedShip.row, curAttackedShip.column) //get avaiable cells
+        
+      }
+    //NOT HIT
+    }else{
+      playerCELLS[((row*10)+column)].classList.add("clicked");
+      nextAtack = null;
+    }
   }else{
-    playerCELLS[((row*10)+column)].classList.add("clicked");
-    nextAtack = null;
+
+    const attack = getRandomAvaibleAttack();
+    const attackData = realPlayer.receiveAttack(attack.x, attack.y);
+    if(attackData.hit){
+      playerCELLS[((attack.x*10)+attack.y)].classList.add("fire");
+      console.log("WORKED");
+    }else{
+      playerCELLS[((attack.x*10)+attack.y)].classList.add("clicked");
+      console.log("NOT WORKED");
+    }
+
+
+
+
+
+
+
+
+
+
+    if(avaiableCells.length == 0){
+      console.log("last try");
+      curAttackedShip = null;
+    }
+    
+    
   }
   curTurn = "player";
-  console.log(avaiable);
-  console.log(avaiable.length);
 }
 
 function ready(){
