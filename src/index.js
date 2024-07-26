@@ -237,7 +237,6 @@ function getRandomInt(min, max) {
   return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 function canPlaceEnemyShip(board, len, axis, x, y){
-  console.log(x, y, "axis:", axis);
   for (let i = 0; i < len; i++) {
     if (axis == 1) {
       //vertical
@@ -263,14 +262,38 @@ function addEnemyShip(board, len, axis, x, y, shipID){
 function addRandomeEnemyShips(board, len, id){
   let x = getRandomInt(0,9);
   let y = getRandomInt(0,9);
-  let axis = getRandomInt(0,1); // x = 1, y = 0
+  let axis = getRandomInt(0,1); // y=1 x=0
   while(!canPlaceEnemyShip(board, 5, axis, x, y)){
     x = getRandomInt(0,9);
     y = getRandomInt(0,9);
     axis = getRandomInt(0,1);
   }
+  enemyInfo[id].curPOS = ((x*10)+y);
+  enemyInfo[id].direction = (axis == 1) ? "h" : "v";
   addEnemyShip(board, len, axis, x, y, id);
 }
+let enemyInfo = {
+  1 : {
+    curPOS : null,
+    direction : null
+  },
+  2 : {
+    curPOS : null,
+    direction : null
+  },
+  3 : {
+    curPOS : null,
+    direction : null
+  },
+  4 : {
+    curPOS : null,
+    direction : null
+  },
+  5 : {
+    curPOS : null,
+    direction : null
+  }
+};
 function placeEnemyShips(){
   let board = [
     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
@@ -292,7 +315,8 @@ function placeEnemyShips(){
   return board;
 };
 console.log("ENEMY BOARD:");
-console.log(placeEnemyShips());
+let enemyBoard = placeEnemyShips();
+console.log(enemyBoard);
 function ready(){
   if(checkShipsOnBoard()){
     console.log("READY");
@@ -300,8 +324,7 @@ function ready(){
     console.log(myGameboard.board);
     console.log(ALL_SHIPS_INF);
     dragShipsMenu.remove();
-
-    addBoards(ALL_SHIPS_INF);
+    addBoards(ALL_SHIPS_INF, enemyInfo);
   }else{
     console.log("NOT READY");
   }

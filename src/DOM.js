@@ -1,5 +1,5 @@
 
-function addBoards(shipsinf) {
+function addBoards(shipsinf, enemyInfo) {
     console.log('---------------------\nAdding Boards');
     console.log(shipsinf);
     const boards = document.createElement('div');
@@ -7,7 +7,8 @@ function addBoards(shipsinf) {
     boards.classList.add('boards');
     bodyy.append(boards);
     addPlayerBoard(shipsinf, boards);
-    addCPUboard(shipsinf, boards);
+    addCPUboard(enemyInfo, boards);
+    console.log('Boards Added\n---------------------');
 }
 function addPlayerBoard(shipsinf, boards){
     const P_board = document.createElement('div');
@@ -166,7 +167,7 @@ function addPlayerShips(shipsinf){
     }
     
 };
-function addCPUboard(shipsinf, boards){
+function addCPUboard(CPUinf, boards){
     const CPU_board = document.createElement('div');
     CPU_board.classList.add('CPU_board');
     const CPU_board_letters = document.createElement('li');
@@ -207,19 +208,128 @@ function addCPUboard(shipsinf, boards){
     const CPU_board_grid = document.createElement('div');
     CPU_board_grid.classList.add('CPU_board_grid');
 
-    for (let i = 1; i <= 100; i++) {
+    for (let i = 0; i < 100; i++) {
         const cell = document.createElement('div');
         cell.classList.add('CPU_cell');
+        cell.addEventListener("click", () =>{
+            console.log("clicked " + i);
+        });
         CPU_board_grid.append(cell);
     }
 
     CPU_middle.append(CPU_board_numbers);
     CPU_middle.append(CPU_board_grid);
 
+    //
+    const CPU_bottom = document.createElement('div');
+    CPU_bottom.classList.add('CPU_bottom');
+
+    const CPU_text = document.createElement('h2');
+    CPU_text.textContent = 'Enemy:';
+    CPU_text.classList.add('CPU_text');
+
+    CPU_bottom.append(CPU_text);
+
+    const carrierICON = document.createElement('img');
+    carrierICON.classList.add('carrierICON');
+    carrierICON.src = require('./imgs/CarrierPixel.svg');
+
+    const battleshipICON = document.createElement('img');
+    battleshipICON.classList.add('battleshipICON');
+    battleshipICON.src = require('./imgs/battleshipPixel.svg');
+
+    const cruiserICON = document.createElement('img');
+    cruiserICON.classList.add('cruiserICON');
+    cruiserICON.src = require('./imgs/cruiserPixel.svg');
+
+    const submarineICON = document.createElement('img');
+    submarineICON.classList.add('submarineICON');
+    submarineICON.src = require('./imgs/submarinePixel.svg');
+
+    const destroyerICON = document.createElement('img');
+    destroyerICON.classList.add('destroyerICON');
+    destroyerICON.src = require('./imgs/destroyerPixel.svg');
+
+
+    const CPU_shipsHolder = document.createElement('div');
+    CPU_shipsHolder.classList.add('CPU_shipsHolder');
+    CPU_shipsHolder.append(carrierICON);
+    CPU_shipsHolder.append(battleshipICON);
+    CPU_shipsHolder.append(cruiserICON);
+    CPU_shipsHolder.append(submarineICON);
+    CPU_shipsHolder.append(destroyerICON);
+
+    CPU_bottom.append(CPU_shipsHolder);
+
     CPU_board.append(CPU_board_letters);
     CPU_board.append(CPU_middle);
-    
-    boards.append(CPU_board);
-}
+    CPU_board.append(CPU_bottom);
 
+
+    boards.append(CPU_board);
+    
+    addCPUShips(CPUinf);
+}
+function addCPUShips(CPUinf){
+    const CELLS = document.querySelectorAll('.CPU_cell');
+
+    const carrier = document.createElement('img');
+    carrier.classList.add('carrierSVG');
+    carrier.src = require('./imgs/CarrierPixel.svg');
+
+    const battleship = document.createElement('img');
+    battleship.classList.add('battleshipSVG');
+    battleship.src = require('./imgs/battleshipPixel.svg');
+
+    
+    const cruiser = document.createElement('img');
+    cruiser.classList.add('cruiserSVG');
+    cruiser.src = require('./imgs/cruiserPixel.svg');
+
+    const submarine = document.createElement('img');
+    submarine.classList.add('submarineSVG');
+    submarine.src = require('./imgs/submarinePixel.svg');
+
+    const destroyer = document.createElement('img');
+    destroyer.classList.add('destroyerSVG');
+    destroyer.src = require('./imgs/destroyerPixel.svg');
+
+    carrier.classList.add('hiddenSHIP');
+    battleship.classList.add('hiddenSHIP');
+    cruiser.classList.add('hiddenSHIP');
+    submarine.classList.add('hiddenSHIP');
+    destroyer.classList.add('hiddenSHIP');
+
+
+    CELLS[CPUinf[1].curPOS].append(carrier);
+    CELLS[CPUinf[1].curPOS].addEventListener('mousedown', event => event.preventDefault());
+    if(CPUinf[1].direction == "h"){
+        CELLS[CPUinf[1].curPOS].classList.add("rotate");
+    }
+
+    CELLS[CPUinf[2].curPOS].append(battleship);
+    CELLS[CPUinf[2].curPOS].addEventListener('mousedown', event => event.preventDefault());
+    if(CPUinf[2].direction == "h"){
+        CELLS[CPUinf[2].curPOS].classList.add("rotate");
+    }
+
+    CELLS[CPUinf[3].curPOS].append(cruiser);
+    CELLS[CPUinf[3].curPOS].addEventListener('mousedown', event => event.preventDefault());
+    if(CPUinf[3].direction == "h"){
+        CELLS[CPUinf[3].curPOS].classList.add("rotate");
+    }
+
+    CELLS[CPUinf[4].curPOS].append(submarine);
+    CELLS[CPUinf[4].curPOS].addEventListener('mousedown', event => event.preventDefault());
+    if(CPUinf[4].direction == "h"){
+        CELLS[CPUinf[4].curPOS].classList.add("rotate");
+    }
+
+    CELLS[CPUinf[5].curPOS].append(destroyer);
+    CELLS[CPUinf[5].curPOS].addEventListener('mousedown', event => event.preventDefault());
+    if(CPUinf[5].direction == "h"){
+        CELLS[CPUinf[5].curPOS].classList.add("rotate");
+    }
+    
+};
 module.exports = { addBoards };

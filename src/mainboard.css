@@ -141,3 +141,35 @@
 .CPU_board .CPU_board_grid .CPU_cell{
     border: white 1px solid;
 }
+.CPU_board .CPU_board_grid .CPU_cell:hover{
+    background-color: #5c5c5c;
+}
+
+.CPU_board .CPU_bottom .CPU_text{
+    display: flex;
+    align-self: flex-start;
+    font-family: "VT323", monospace;
+    font-weight: 400;
+    font-style: normal;
+    font-size: 40px;
+    margin: 0;
+}
+.CPU_board .CPU_bottom .CPU_shipsHolder{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+    gap: 10px;
+}
+.CPU_board .CPU_bottom{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    width: 80%;
+    margin-top: 20px;
+}
+
+
+
+.hiddenSHIP{
+    opacity: 30%;
+}
