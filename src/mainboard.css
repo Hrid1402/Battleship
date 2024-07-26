@@ -167,9 +167,30 @@
     width: 80%;
     margin-top: 20px;
 }
-
-
+.clicked{
+    background-color: #5c5c5c;
+    pointer-events:none;
+}
+.fire{
+    background-color: #ff0000;
+    pointer-events:none;
+}
 
 .hiddenSHIP{
-    opacity: 30%;
+    display: none;
+}
+.sunked{
+    opacity: 80%;
+}
+.sunkedICON{
+    filter:  invert(40%) sepia(32%) saturate(4888%) hue-rotate(338deg) brightness(107%) contrast(109%);
+    animation: shake 1s ease-in-out; /* Apply the shake animation */
+}
+
+@keyframes shake {
+  0% { transform: translateX(0); }
+  25% { transform: translateX(-5px); }
+  50% { transform: translateX(5px); }
+  75% { transform: translateX(-5px); }
+  100% { transform: translateX(0); }
 }

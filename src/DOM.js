@@ -1,4 +1,22 @@
 
+let cpuSHIPS = {
+    carrier: null,
+    battleship: null,
+    cruiser: null,
+    submarine: null,
+    destroyer: null
+}
+
+let cpuICONS = {
+    1: null,
+    2: null,
+    3: null,
+    4: null,
+    5: null   
+}
+
+let playerCELLS = [];
+
 function addBoards(shipsinf, enemyInfo) {
     console.log('---------------------\nAdding Boards');
     console.log(shipsinf);
@@ -54,6 +72,7 @@ function addPlayerBoard(shipsinf, boards){
     for (let i = 1; i <= 100; i++) {
         const cell = document.createElement('div');
         cell.classList.add('P_cell');
+        playerCELLS.push(cell);
         P_board_grid.append(cell);
     }
     P_middle.append(P_board_numbers);
@@ -211,9 +230,6 @@ function addCPUboard(CPUinf, boards){
     for (let i = 0; i < 100; i++) {
         const cell = document.createElement('div');
         cell.classList.add('CPU_cell');
-        cell.addEventListener("click", () =>{
-            console.log("clicked " + i);
-        });
         CPU_board_grid.append(cell);
     }
 
@@ -259,6 +275,14 @@ function addCPUboard(CPUinf, boards){
     CPU_shipsHolder.append(submarineICON);
     CPU_shipsHolder.append(destroyerICON);
 
+    cpuICONS = {
+        1: carrierICON,
+        2: battleshipICON,
+        3: cruiserICON,
+        4: submarineICON,
+        5: destroyerICON
+    }
+
     CPU_bottom.append(CPU_shipsHolder);
 
     CPU_board.append(CPU_board_letters);
@@ -293,6 +317,15 @@ function addCPUShips(CPUinf){
     const destroyer = document.createElement('img');
     destroyer.classList.add('destroyerSVG');
     destroyer.src = require('./imgs/destroyerPixel.svg');
+
+    cpuSHIPS = {
+        1: carrier,
+        2: battleship,
+        3: cruiser,
+        4: submarine,
+        5: destroyer
+    }
+    
 
     carrier.classList.add('hiddenSHIP');
     battleship.classList.add('hiddenSHIP');
@@ -332,4 +365,18 @@ function addCPUShips(CPUinf){
     }
     
 };
-module.exports = { addBoards };
+function getCpuCells(){
+    const CELLS = document.querySelectorAll('.CPU_cell');
+    return CELLS;
+}
+function getCpuSHIPS(){
+    return cpuSHIPS;
+}
+function getCpuICONS(){
+    return cpuICONS;
+}
+
+function getPlayerCELLS(){
+    return playerCELLS;
+}
+module.exports = { addBoards, getCpuCells, getCpuSHIPS, getCpuICONS, getPlayerCELLS};

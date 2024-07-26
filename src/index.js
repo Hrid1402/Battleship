@@ -1,6 +1,6 @@
 import("./style.css");
 import("./mainboard.css");
-const { addBoards } = require("./DOM.js");
+const { addBoards, getCpuCells, getCpuSHIPS, getCpuICONS, getPlayerCELLS} = require("./DOM.js");
 
 console.log("Working");
 const carrierSVG = document.querySelector(".carrierSVG");
@@ -18,6 +18,9 @@ let curShipID = 1;
 let curShipLen = 5;
 let curDirection = "v";
 const TOGGLE_INTERVAL = 340; // Interval in milliseconds
+
+//TURNS
+let curTurn = "player";
 
 class Ship {
   constructor(length) {
@@ -51,17 +54,6 @@ class Gameboard {
       [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
     ];
   }
-  receiveAttack(row, column) {
-    if (this.board[row][column] == 1) {
-      this.board[row][column] = "x";
-      console.log("hit");
-      console.log(ships[1].curHits);
-      ships[1].hit();
-      ships[1].isSunk();
-    } else {
-      console.log("miss");
-    }
-  }
   addShip(ship, row, column, direction, id) {
     for (let i = 0; i < ship.length; i++) {
       if (direction == "h") {
@@ -75,24 +67,20 @@ class Gameboard {
 }
 const myGameboard = new Gameboard();
 
-//myGameboard.addShip(ships[1], (row = 4), (column = 0), "v");
-//myGameboard.addShip(new Ship(4), (row = 0), (column = 0), "h");
-myGameboard.receiveAttack(0, 0);
-//console.log(myGameboard.board);
-
-
-ship1 = new Ship(5); //Carrier
-ship2 = new Ship(4); //Battleship
-ship3 = new Ship(3); //Cruiser
-ship4 = new Ship(3); //Submarine
-ship5 = new Ship(2); //Destroyer
 
 let ships = {
-  1 : ship1,
-  2 : ship2,
-  3 : ship3,
-  4 : ship4,
-  5 : ship5
+  1 : new Ship(5), //Carrier,
+  2 : new Ship(4), //Battleship,
+  3 : new Ship(3), //Destroyer
+  4 : new Ship(3), //Submarine,
+  5 : new Ship(2), //Destroyer
+};
+let enemy_ships = {
+  1 : new Ship(5), //Carrier,
+  2 : new Ship(4), //Battleship,
+  3 : new Ship(3), //Destroyer
+  4 : new Ship(3), //Submarine,
+  5 : new Ship(2), //Destroyer
 };
 
 let ALL_SHIPS_INF = {
@@ -314,9 +302,55 @@ function placeEnemyShips(){
   addRandomeEnemyShips(board, 2, 5); //adding destroyer
   return board;
 };
+
+
+
+
+class Player {
+  constructor(myBoard, ships) {
+    this.board = myBoard;
+    this.remainingShips = 5;
+    this.shipsData = ships;
+  }
+  receiveAttack(row, column) {
+    if (this.board[row][column] != 0) {
+      let id = this.board[row][column];
+      this.board[row][column] = "x";
+      console.log("hit");
+      console.log("id:" + id);
+      console.log(this.shipsData[id].curHits);
+      this.shipsData[id].hit();
+      this.shipsData[id].isSunk();
+      console.log("--" + this.shipsData[id].sunk);
+      return {hit: true, sunked: this.shipsData[id].sunk, id: id};
+    } else {
+      console.log("miss");
+      return {hit: false, sunked: false, id: null};
+    }
+  }
+}
+
+
 console.log("ENEMY BOARD:");
 let enemyBoard = placeEnemyShips();
 console.log(enemyBoard);
+
+let realPlayer = new Player(myGameboard.board, ships);
+
+let cpuPlayer = new Player(enemyBoard, enemy_ships);
+
+function cpuPlayTurn(){
+  let x = getRandomInt(0,9);
+  let y = getRandomInt(0,9);
+  const playerAttackData = realPlayer.receiveAttack(x, y);
+  let playerCELLS = getPlayerCELLS();
+  if(playerAttackData.hit){
+    playerCELLS[((x*10)+y)].classList.add("fire");
+  }else{
+    playerCELLS[((x*10)+y)].classList.add("clicked");
+  }
+}
+
 function ready(){
   if(checkShipsOnBoard()){
     console.log("READY");
@@ -325,6 +359,40 @@ function ready(){
     console.log(ALL_SHIPS_INF);
     dragShipsMenu.remove();
     addBoards(ALL_SHIPS_INF, enemyInfo);
+    let CPU_cells = getCpuCells();
+    for(let i = 0; i < CPU_cells.length; i++){
+      CPU_cells[i].addEventListener("click", () =>{
+        //
+        if(curTurn=="player"){
+          let x = Math.floor(i / 10);
+          let y = i % 10;
+          const CPUattackData = cpuPlayer.receiveAttack(x, y);
+          if(CPUattackData.hit){
+            CPU_cells[i].classList.add("fire");
+            if(CPUattackData.sunked){
+              let cpuSHIPS = getCpuSHIPS();
+              let cpuICONS = getCpuICONS();
+              cpuSHIPS[CPUattackData.id].classList.remove("hiddenSHIP");
+              cpuSHIPS[CPUattackData.id].classList.add("sunked");
+              cpuSHIPS[CPUattackData.id].classList.add("inFront");
+
+              cpuICONS[CPUattackData.id].classList.add("sunkedICON");
+              cpuPlayer.remainingShips--;
+              if(cpuPlayer.remainingShips == 0){
+                console.log("YOU WIN");
+              }
+            }
+            
+          }else{
+            CPU_cells[i].classList.add("clicked");
+          }
+          curTurn = "cpu";
+          //CPU TURN
+          cpuPlayTurn();
+        }
+        //
+      });
+    }
   }else{
     console.log("NOT READY");
   }
@@ -420,7 +488,6 @@ battleshipSVG.addEventListener('drag', (event) => {
 battleshipSVG.addEventListener("dragend", () => {
   dragEnding(battleshipSVG);
 });
-
 
 cruiserSVG.addEventListener("dragstart", () => {
   curShip = cruiserSVG;
@@ -642,3 +709,4 @@ for(let i = 0; i < CELLS.length; i++) {
     }
   });
 }
+//
