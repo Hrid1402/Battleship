@@ -339,6 +339,35 @@ class Player {
   }
 }
 
+function getAvaiableCells(row, column){
+  let left = column-1;
+  let right = column+1;
+  let up = row-1;
+  let down = row+1;
+
+  let attacksAvaiables = [];
+
+  if(left >= 0 && avaiable.includes((row*10)+left)){      //try left
+    console.log("left able");
+    attacksAvaiables.push({"x":row, "y":left, "dir": "left"});  
+  }
+  if(right <= 9 && avaiable.includes((row*10)+right)){ //try right
+    console.log("right able");
+    attacksAvaiables.push({"x":row, "y":right , "dir": "right"});
+  }
+  if(up >= 0 && avaiable.includes((up*10)+column)){ //try up
+    console.log("up able");
+    attacksAvaiables.push({"x":up, "y":column , "dir": "up"});
+  }  
+  if(down <= 9 && avaiable.includes((down*10)+column)){ //try down
+    console.log("down able");
+    attacksAvaiables.push({"x":down, "y":column , "dir": "down"});
+  }
+  return attacksAvaiables;
+}
+function getRandomAvaibleAttack(attacksArray){
+  return (attacksArray.length==0) ? null : attacksArray[getRandomInt(0, attacksArray.length-1)];
+}
 
 console.log("ENEMY BOARD:");
 let enemyBoard = placeEnemyShips();
@@ -351,18 +380,32 @@ let avaiable  = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 1
 console.log(avaiable);
 console.log(avaiable.length);
 
+let nextAtack = null;
+let shipFoundPos = null;
+let curDir = null;
 function cpuPlayTurn(){
-  let randomPos = getRandomInt(0, avaiable.length-1);
-  let randomPosValue = avaiable[randomPos];
-  //row = Math.floor(i/10), column = Math.floor(i%10)
-  let x = Math.floor(randomPosValue % 10);
-  let y = Math.floor(randomPosValue / 10);
-  console.log("---  " +x + " " + y + "---");
-  const playerAttackData = realPlayer.receiveAttack(x, y);
+  let randomPos = null;
+  let row = null;
+  let column = null;
+  if(nextAtack != null){
+    row = nextAtack.x;
+    column = nextAtack.y;
+    let value = ((row*10)+column);
+    randomPos = avaiable.indexOf(value);
+  }else{
+    randomPos = getRandomInt(0, avaiable.length-1);
+    let randomPosValue = avaiable[randomPos];
+    //row = Math.floor(i/10), column = Math.floor(i%10)
+    row = Math.floor(randomPosValue / 10);
+    column = Math.floor(randomPosValue % 10);
+  }
+  console.log("-------------------------------------------------")
+  const playerAttackData = realPlayer.receiveAttack(row, column);
   let playerCELLS = getPlayerCELLS();
   avaiable.splice(randomPos, 1);
+
   if(playerAttackData.hit){
-    playerCELLS[((x*10)+y)].classList.add("fire");
+    playerCELLS[((row*10)+column)].classList.add("fire");
     if(playerAttackData.sunked){
       let icons = getPlayerICONS();
       console.log(icons);
@@ -373,9 +416,36 @@ function cpuPlayTurn(){
         victoryText.textContent = "Enemy won!";
         dialog.showModal();
       }
+      nextAtack = null;
+    }else{
+      //-------------------------
+      console.log("planning...");
+      console.log("x: " + row + " y: " + column);
+      let avaiableCells = getAvaiableCells(row, column)
+      if(nextAtack==null){
+        nextAtack = getRandomAvaibleAttack(avaiableCells);
+        if(nextAtack != null){
+          console.log("nextAtack DIR = "  +  nextAtack.dir +"\nnextAtack: " + nextAtack.x + " " + nextAtack.y);
+        }
+      }else{
+        if(nextAtack.dir == "left" && nextAtack.y-1 > 0 && avaiable.includes((nextAtack.x*10)+nextAtack.y-1)){
+          nextAtack.y--;
+        }else if(nextAtack.dir == "right" && nextAtack.y+1 < 9 && avaiable.includes((nextAtack.x*10)+nextAtack.y+1)){
+          nextAtack.y++;
+        }else if(nextAtack.dir == "up" && nextAtack.x-1 > 0 && avaiable.includes(((nextAtack.x-1)*10)+nextAtack.y)){
+          nextAtack.x--;
+        }else if(nextAtack.dir == "down" && nextAtack.x+1 < 9 && avaiable.includes(((nextAtack.x+1)*10)+nextAtack.y)){
+          nextAtack.x++;
+        }
+        console.log("continue atack");
+        console.log("nextAtack DIR = "  +  nextAtack.dir +"\nnextAtack: " + nextAtack.x + " " + nextAtack.y);
+      }
+      
     }
+      
   }else{
-    playerCELLS[((x*10)+y)].classList.add("clicked");
+    playerCELLS[((row*10)+column)].classList.add("clicked");
+    nextAtack = null;
   }
   curTurn = "player";
   console.log(avaiable);
