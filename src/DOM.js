@@ -15,6 +15,14 @@ let cpuICONS = {
     5: null   
 }
 
+let playerICONS={
+    1: null,
+    2: null,
+    3: null,
+    4: null,
+    5: null   
+}
+
 let playerCELLS = [];
 
 function addBoards(shipsinf, enemyInfo) {
@@ -106,6 +114,14 @@ function addPlayerBoard(shipsinf, boards){
     const destroyerICON = document.createElement('img');
     destroyerICON.classList.add('destroyerICON');
     destroyerICON.src = require('./imgs/destroyerPixel.svg');
+    
+    playerICONS={
+        1: carrierICON,
+        2: battleshipICON,
+        3: cruiserICON,
+        4: submarineICON,
+        5: destroyerICON   
+    }
 
 
     const P_shipsHolder = document.createElement('div');
@@ -149,6 +165,12 @@ function addPlayerShips(shipsinf){
     const destroyer = document.createElement('img');
     destroyer.classList.add('destroyerSVG');
     destroyer.src = require('./imgs/destroyerPixel.svg');
+
+    carrier.classList.add('sunked');
+    battleship.classList.add('sunked');
+    cruiser.classList.add('sunked');
+    submarine.classList.add('sunked');
+    destroyer.classList.add('sunked');
 
     CELLS[shipsinf[1].curPOS].append(carrier);
     CELLS[shipsinf[1].curPOS].classList.add("inFront");
@@ -282,6 +304,7 @@ function addCPUboard(CPUinf, boards){
         4: submarineICON,
         5: destroyerICON
     }
+    
 
     CPU_bottom.append(CPU_shipsHolder);
 
@@ -379,4 +402,7 @@ function getCpuICONS(){
 function getPlayerCELLS(){
     return playerCELLS;
 }
-module.exports = { addBoards, getCpuCells, getCpuSHIPS, getCpuICONS, getPlayerCELLS};
+function getPlayerICONS(){
+    return playerICONS;
+}
+module.exports = { addBoards, getCpuCells, getCpuSHIPS, getCpuICONS, getPlayerCELLS, getPlayerICONS};

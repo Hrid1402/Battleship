@@ -1,6 +1,6 @@
 import("./style.css");
 import("./mainboard.css");
-const { addBoards, getCpuCells, getCpuSHIPS, getCpuICONS, getPlayerCELLS} = require("./DOM.js");
+const { addBoards, getCpuCells, getCpuSHIPS, getCpuICONS, getPlayerCELLS, getPlayerICONS} = require("./DOM.js");
 
 console.log("Working");
 const carrierSVG = document.querySelector(".carrierSVG");
@@ -12,6 +12,15 @@ const destroyerSVG = document.querySelector(".destroyerSVG");
 const dragShipsMenu = document.querySelector("#dragShipsMenu");
 const resetBTN = document.querySelector(".reset");
 const readyBTN = document.querySelector(".ready");
+
+const dialog = document.querySelector("#WINdialog");
+
+const restartBTN = document.querySelector("#restartBTN");
+let victoryText = document.querySelector("#victoryText"); 
+
+restartBTN.addEventListener("click", () => {
+  location.reload();
+});
 
 let curShip = carrierSVG;
 let curShipID = 1;
@@ -313,15 +322,15 @@ class Player {
     this.shipsData = ships;
   }
   receiveAttack(row, column) {
-    if (this.board[row][column] != 0) {
+    if (this.board[row][column] != 0 && this.board[row][column] != "x") {
       let id = this.board[row][column];
+      console.log(this.board[row][column]);
       this.board[row][column] = "x";
       console.log("hit");
       console.log("id:" + id);
       console.log(this.shipsData[id].curHits);
       this.shipsData[id].hit();
       this.shipsData[id].isSunk();
-      console.log("--" + this.shipsData[id].sunk);
       return {hit: true, sunked: this.shipsData[id].sunk, id: id};
     } else {
       console.log("miss");
@@ -338,17 +347,39 @@ console.log(enemyBoard);
 let realPlayer = new Player(myGameboard.board, ships);
 
 let cpuPlayer = new Player(enemyBoard, enemy_ships);
+let avaiable  = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90, 91, 92, 93, 94, 95, 96, 97, 98, 99];
+console.log(avaiable);
+console.log(avaiable.length);
 
 function cpuPlayTurn(){
-  let x = getRandomInt(0,9);
-  let y = getRandomInt(0,9);
+  let randomPos = getRandomInt(0, avaiable.length-1);
+  let randomPosValue = avaiable[randomPos];
+  //row = Math.floor(i/10), column = Math.floor(i%10)
+  let x = Math.floor(randomPosValue % 10);
+  let y = Math.floor(randomPosValue / 10);
+  console.log("---  " +x + " " + y + "---");
   const playerAttackData = realPlayer.receiveAttack(x, y);
   let playerCELLS = getPlayerCELLS();
+  avaiable.splice(randomPos, 1);
   if(playerAttackData.hit){
     playerCELLS[((x*10)+y)].classList.add("fire");
+    if(playerAttackData.sunked){
+      let icons = getPlayerICONS();
+      console.log(icons);
+      icons[playerAttackData.id].classList.add("sunkedICON");
+      realPlayer.remainingShips--;
+      if(realPlayer.remainingShips == 0){
+        console.log("ENEMY WINS!");
+        victoryText.textContent = "Enemy won!";
+        dialog.showModal();
+      }
+    }
   }else{
     playerCELLS[((x*10)+y)].classList.add("clicked");
   }
+  curTurn = "player";
+  console.log(avaiable);
+  console.log(avaiable.length);
 }
 
 function ready(){
@@ -380,6 +411,8 @@ function ready(){
               cpuPlayer.remainingShips--;
               if(cpuPlayer.remainingShips == 0){
                 console.log("YOU WIN");
+                victoryText.textContent = "You won!";
+                dialog.showModal();
               }
             }
             

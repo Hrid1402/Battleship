@@ -6,6 +6,13 @@
     <title>Battleship</title>
   </head>
   <body>
+    <dialog id="WINdialog">
+      <div class="divDialog">
+        <h1 id="victoryText">You won!</h1>
+        <img src="./imgs/whiteFlagGif.gif" alt="white flag gif">
+        <button id="restartBTN">Restart</button>
+      </div>
+    </dialog>
     <h1 class="title">Battleship</h1>
     <div class="firstMenu" id="dragShipsMenu">
       <h1 class="text1">Drag your ships onto the grid</h1>
@@ -178,7 +185,7 @@
         </div>
       </div>
       <div class="bottomPart">
-        <h1 class="text2">Press <span class="shift"> Shift </span> while dragging to rotate the ship</h1>
+        <h1 class="text2">Press <span class="shift"> Shift </span> while dragging on the board to rotate the ship</h1>
         <div class="buttons">
           <button class="ready" id="ready">Ready!</button>
           <button class="reset" id="reset">Reset</button>
