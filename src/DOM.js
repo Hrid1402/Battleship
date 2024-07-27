@@ -22,6 +22,8 @@ let playerICONS={
     4: null,
     5: null   
 }
+let playerText = null;
+let cpuText = null;
 
 let playerCELLS = [];
 
@@ -90,7 +92,7 @@ function addPlayerBoard(shipsinf, boards){
     P_bottom.classList.add('P_bottom');
 
     const P_text = document.createElement('h2');
-    P_text.textContent = 'You:';
+    P_text.textContent = 'FRIENDLY WATERS:';
     P_text.classList.add('P_text');
 
     P_bottom.append(P_text);
@@ -134,6 +136,21 @@ function addPlayerBoard(shipsinf, boards){
 
     P_bottom.append(P_shipsHolder);
 
+
+    const userTextContainer = document.createElement('div');
+    userTextContainer.classList.add('P_TextContainer');
+
+    const container = document.createElement('div');
+    container.classList.add('P_container');
+
+    const userText = document.createElement('h2');
+    userText.textContent = 'READY YOUR SHIPS, CAPTAIN! LET THE BATTLE BEGIN!';
+
+    playerText = userText;
+    container.append(userText);
+    userTextContainer.append(container);
+
+    P_board.append(userTextContainer);
     P_board.append(P_board_letters);
     P_board.append(P_middle);
     P_board.append(P_bottom);
@@ -263,7 +280,7 @@ function addCPUboard(CPUinf, boards){
     CPU_bottom.classList.add('CPU_bottom');
 
     const CPU_text = document.createElement('h2');
-    CPU_text.textContent = 'Enemy:';
+    CPU_text.textContent = 'ENEMY WATERS:';
     CPU_text.classList.add('CPU_text');
 
     CPU_bottom.append(CPU_text);
@@ -405,4 +422,7 @@ function getPlayerCELLS(){
 function getPlayerICONS(){
     return playerICONS;
 }
-module.exports = { addBoards, getCpuCells, getCpuSHIPS, getCpuICONS, getPlayerCELLS, getPlayerICONS};
+function getPlayerAndCpuText(){
+    return {player: playerText, cpu: cpuText};
+}
+module.exports = { addBoards, getCpuCells, getCpuSHIPS, getCpuICONS, getPlayerCELLS, getPlayerICONS, getPlayerAndCpuText};

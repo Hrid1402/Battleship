@@ -1,6 +1,6 @@
 import("./style.css");
 import("./mainboard.css");
-const { addBoards, getCpuCells, getCpuSHIPS, getCpuICONS, getPlayerCELLS, getPlayerICONS} = require("./DOM.js");
+const { addBoards, getCpuCells, getCpuSHIPS, getCpuICONS, getPlayerCELLS, getPlayerICONS, getPlayerAndCpuText} = require("./DOM.js");
 
 //sound
 const exp1 = require('./imgs/Explotion1.mp3');
@@ -401,6 +401,116 @@ function getRandomAvaibleAttack(){
   console.log(avaiableCells);
   return randomCell;
 }
+//TEXT STUFF
+let CommandsText = null;
+let UserCommandText = null;
+let cpuCommandText = null;
+
+
+function pickRandomText(textArray){
+  const randomIndex = getRandomInt(0, textArray.length-1);
+  return textArray[randomIndex];
+}
+
+function writeText(textArray, textElement){
+  textElement.classList.remove("runWriting");
+  textElement.textContent = '';
+
+  // Force a reflow
+  void textElement.offsetWidth;
+
+  // Set the new text
+  const newText = pickRandomText(textArray);
+  textElement.textContent = newText;
+
+  // Add the class to trigger the animation
+  textElement.classList.add("runWriting");
+}
+//PLAYER
+const playerHitWater = [
+  "OOPS! WE'RE FEEDING THE FISH, CAPTAIN!",
+  "JUST A SPLASH, CAPTAIN! TRY AGAIN!",
+  "AIM BETTER, CAPTAIN! WE'RE NOT FISHING!",
+  "WATER HIT! LET'S FIND THOSE SHIPS, CAPTAIN!",
+  "CAPTAIN, WE'RE MAKING WAVES BUT NO HITS!",
+  "MISSED, CAPTAIN! ADJUST OUR AIM!",
+  "MISS! THE SEA’S GOT A NEW FRIEND!",
+  "WET WORK, CAPTAIN! BUT NO SHIP IN SIGHT!",
+  "IT'S A WATER PARTY, BUT WHERE'S THE ENEMY?",
+  "SPLASHDOWN, CAPTAIN! ADJUST OUR TARGET!",
+  "WATER HIT! WE’RE NOT AQUA NAVIGATORS!",
+  "CAPTAIN, WE’RE GETTING THE OCEAN WET!",
+  "A SPLASH! THE SHIP'S NOT IN THE WATER!",
+  "MISS AGAIN! TIME TO DRAIN THE SEA, CAPTAIN!",
+  "HIT THE WATER, CAPTAIN! BUT NOT THE ENEMY!",
+  "SPLASH! OUR TARGET’S NOT FLOATING!",
+  "WATER HIT! EVEN THE FISH ARE SAD!",
+  "MISS! OUR AIM IS ON VACATION!",
+  "SPLASH! WE'RE JUST MAKING WAVES!",
+  "OOPS! THE SEA’S NOT IMPRESSED!",
+  "DISAPPOINTING HIT, CAPTAIN!",
+  "HIT WATER AGAIN! SAD FACE!",
+  "MISS! THE SEA’S SHAKING ITS HEAD!",
+  "SPLASHDOWN! TRY AGAIN, CAPTAIN!",
+  "OUR AIM’S ALL WET, CAPTAIN!",
+  "WATER HIT! THE SEA’S LAUGHING!"
+]
+const playerHitShip = [
+  "EXCELLENT SHOT! LET'S FINISH THEM OFF!",
+  "WELL DONE, CAPTAIN! KEEP THE HITS COMING!",
+  "HIT! THE ENEMY SHIP IS SHAKING!",
+  "NAILED IT! THEY’RE TAKING DAMAGE!",
+  "HIT, THE ENEMY’S FEELING THE PAIN!",
+  "SPOT ON! THE ENEMY’S IN BIG TROUBLE!",
+  "BULLSEYE! DIDN’T SEE THAT COMING?",
+  "HIT!, YOUR SHIP’S A EASY TARGET!",
+  "HIT! YOUR SHIP’S A FLOATING TARGET PRACTICE!",
+  "EASY, DIDN’T EVEN HAVE TO AIM!",
+  "OH SORRY, WAS THAT YOUR SHIP?",
+  "WHOOPS! DIDN’T KNOW YOUR SHIP WAS THERE!",
+  "NICE HIT! KEEP IT UP!",
+  "GREAT SHOT! PRESS ON!",
+  "WELL DONE! STAY SHARP!",
+  "EXCELLENT! KEEP PUSHING!",
+  "FANTASTIC! MORE LIKE THIS!",
+  "SUPERB HIT! DON’T RELAX!",
+  "AMAZING! LET’S KEEP GOING!",
+  "BULLSEYE! STAY ON TRACK!",
+  "OUTSTANDING! MAINTAIN THE PRESSURE!",
+  "BRILLIANT HIT! STAY FOCUSED!"
+]
+const playerSunkShip = [
+  "SHIP SUNK! GREAT JOB, CAPTAIN!",
+  "ENEMY DESTROYED! VICTORY IS OURS!",
+  "DIRECT HIT! ONE LESS SHIP TO WORRY ABOUT!",
+  "SUNK! THE ENEMY’S DOWN FOR THE COUNT!",
+  "SHIP GONE! OUTSTANDING WORK, CAPTAIN!",
+  "ENEMY VANQUISHED! ON TO THE NEXT!",
+  "TOTAL DESTRUCTION! KEEP IT UP!",
+  "TARGET DOWN! THE SEA’S OURS!",
+  "SHIP ANNIHILATED! AWESOME JOB!",
+  "ENEMY SHIP SINKING! CELEBRATE THIS VICTORY!",
+  "SUNK! WAS THAT SHIP JUST FOR SHOW?",
+  "GONE! HOPE YOU WEREN’T ATTACHED TO IT!",
+  "BOOM! YOUR SHIP DIDN’T STAND A CHANCE!",
+  "DESTROYED! WAS THAT A DECORATION?",
+  "SHIP ANNIHILATED! DIDN’T EVEN BREAK A SWEAT!",
+  "OOPS, DID I BREAK YOUR TOY SHIP?",
+  "SUNK! HOPE YOU HAVE A GOOD REPAIR PLAN!",
+  "TOTAL WRECK! WAS YOUR SHIP MADE OF PAPER?",
+  "GONE! DIDN’T REALIZE IT WAS SO EASY!",
+  "SINKING! YOUR SHIP WAS A FLOATING TARGET!"
+];
+const playerVictory = [
+  "VICTORY! WELL DONE, CAPTAIN!",
+  "WE WON! GREAT JOB!",
+  "TRIUMPHANT! VICTORY IS OURS!",
+  "SUCCESS! CELEBRATE THIS WIN!",
+  "VICTORY ACHIEVED! AWESOME WORK!"
+]
+
+
+
 
 console.log("ENEMY BOARD:");
 let enemyBoard = placeEnemyShips();
@@ -692,23 +802,29 @@ async function playerClick(i, CPU_cells){
         cpuSHIPS[CPUattackData.id].classList.add("inFront");
 
         cpuICONS[CPUattackData.id].classList.add("sunkedICON");
+        
         cpuPlayer.remainingShips--;
         if(cpuPlayer.remainingShips == 0){
           console.log("YOU WIN");
           victoryText.textContent = "You won!";
+          writeText(playerVictory, UserCommandText);
           dialog.showModal();
+        }else{
+          writeText(playerSunkShip, UserCommandText);
         }
+      }else{
+        writeText(playerHitShip, UserCommandText);
       }
       
     }else{
       CPU_cells[i].classList.add("clicked");
       CPU_cells[i].classList.add("explode");
+      writeText(playerHitWater, UserCommandText);
     }
     curTurn = "cpu";
     //CPU TURN
     await sleep(2500);
     cpuPlayTurn();
-    
   }
 }
 
@@ -721,9 +837,11 @@ function ready(){
     dragShipsMenu.remove();
     addBoards(ALL_SHIPS_INF, enemyInfo);
     let CPU_cells = getCpuCells();
+    CommandsText = getPlayerAndCpuText();
+    UserCommandText = CommandsText.player;
     for(let i = 0; i < CPU_cells.length; i++){
       CPU_cells[i].addEventListener("click", ()=>{
-        playerClick(i, CPU_cells);
+      playerClick(i, CPU_cells);
       });
     }
   }else{

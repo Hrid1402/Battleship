@@ -266,3 +266,43 @@
   75% { transform: translateX(-5px); }
   100% { transform: translateX(0); }
 }
+
+
+.P_TextContainer{
+    margin-top: 15px;
+    border-radius: 13px;
+    background-color: #918e8e;
+    height: 100%;
+    padding: 0px 15px 0px;
+}
+.P_container{
+    display: inline-block;
+    height: 80px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: start;
+}
+.P_container h2{
+    font-family: "VT323", monospace;
+    font-weight: 400;
+    font-style: normal;
+    font-size: 35px;
+    border-right: 5px solid;
+    margin: 0;
+    margin-top: 10px;
+    width: 100%;
+    white-space: nowrap;
+    overflow: hidden;
+}
+@keyframes cursor{
+    50%{border-color: transparent;}
+}
+@keyframes typing {
+    from { width: 0 }
+}
+.runWriting{
+    animation: 
+    typing 2s,
+    cursor 0.5s step-end infinite alternate;
+}
