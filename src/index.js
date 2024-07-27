@@ -488,7 +488,9 @@ function cpuPlayTurn(){
     }else{
       console.log("LAST ATTACK:")
       console.log(lastAttack);
-      if(curAxis = "x"){
+      console.log("ACTUAL AXIS = " + curAxis);
+      if(curAxis == "x"){
+        console.log("ESTAMOS AXIS X--------------------");
         //left
         if(lastAttack.dir == "left"){
           console.log("TRIYING TO ATTACK LEFT")
@@ -552,6 +554,76 @@ function cpuPlayTurn(){
             }
           }else{
             console.log("NOT ABLE TO ATTACK RIGHT");
+            curAxis = null;
+            curAttackedShip = null;
+            randomAttackCPU();
+          }
+        }
+      }else{
+        console.log("ESTAMOS AXIS Y--------------------");
+        //up
+        if(lastAttack.dir == "up"){
+          console.log("TRIYING TO ATTACK UP")
+          if(lastAttack.x-1 >= 0 && avaiable.includes(((lastAttack.x-1)*10)+lastAttack.y)){
+            console.log("Able to attack up");
+            avaiable.splice(avaiable.indexOf(((lastAttack.x-1)*10)+lastAttack.y), 1);
+            const attackData = realPlayer.receiveAttack(lastAttack.x-1, lastAttack.y);
+            if(attackData.hit){
+              playerCELLS[(((lastAttack.x-1)*10)+lastAttack.y)].classList.add("fire");
+              if(attackData.sunked){
+                let icons = getPlayerICONS();
+                icons[attackData.id].classList.add("sunkedICON");
+                curAxis = null;
+                curAttackedShip = null;
+                realPlayer.remainingShips--;
+                if(realPlayer.remainingShips == 0){
+                  console.log("ENEMY WINS!");
+                  victoryText.textContent = "Enemy won!";
+                  dialog.showModal();
+                }
+              }else{
+                lastAttack = {x: lastAttack.x-1, y: lastAttack.y, dir:lastAttack.dir};
+              }
+            }else{
+              playerCELLS[(((lastAttack.x-1)*10)+lastAttack.y)].classList.add("clicked");
+              curAxis = null;
+            }
+          }else{
+            console.log("NOT ABLE TO ATTACK UP");
+            curAxis = null;
+            curAttackedShip = null;
+            randomAttackCPU();
+          }
+        }
+        //down
+        if(lastAttack.dir == "down"){
+          console.log("TRIYING TO ATTACK DOWN")
+          if(lastAttack.x+1 <= 9 && avaiable.includes(((lastAttack.x+1)*10)+lastAttack.y)){
+            console.log("Able to attack down");
+            avaiable.splice(avaiable.indexOf(((lastAttack.x+1)*10)+lastAttack.y), 1);
+            const attackData = realPlayer.receiveAttack(lastAttack.x+1, lastAttack.y);
+            if(attackData.hit){
+              playerCELLS[(((lastAttack.x+1)*10)+lastAttack.y)].classList.add("fire");
+              if(attackData.sunked){
+                let icons = getPlayerICONS();
+                icons[attackData.id].classList.add("sunkedICON");
+                curAxis = null;
+                curAttackedShip = null;
+                realPlayer.remainingShips--;
+                if(realPlayer.remainingShips == 0){
+                  console.log("ENEMY WINS!");
+                  victoryText.textContent = "Enemy won!";
+                  dialog.showModal();
+                }
+              }else{
+                lastAttack = {x: lastAttack.x+1, y: lastAttack.y, dir:lastAttack.dir};
+              }
+            }else{
+              playerCELLS[(((lastAttack.x+1)*10)+lastAttack.y)].classList.add("clicked");
+              curAxis = null;
+            }
+          }else{
+            console.log("NOT ABLE TO ATTACK DOWN");
             curAxis = null;
             curAttackedShip = null;
             randomAttackCPU();
