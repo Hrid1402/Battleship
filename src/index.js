@@ -508,8 +508,79 @@ const playerVictory = [
   "SUCCESS! CELEBRATE THIS WIN!",
   "VICTORY ACHIEVED! AWESOME WORK!"
 ]
-
-
+const playerEnemymiss = [
+  "MISS! WE'RE STILL IN CONTROL!",
+  "THEY MISSED! KEEP UP THE PRESSURE!",
+  "ENEMY’S OFF TARGET! WE’VE GOT THIS!",
+  "MISS! THEY’RE STRUGGLING!",
+  "THEY MISSED AGAIN! STAY FOCUSED!",
+  "ENEMY MISSED! DID THEY FORGET TO AIM?",
+  "MISS! EVEN THE SEA’S LAUGHING!",
+  "THEY MISSED! WERE THEY BLINDFOLDING?",
+  "OOPS! THEIR AIM’S IN ANOTHER ZIP CODE!",
+  "MISS! THEY’RE MORE OFF TARGET THAN EVER!",
+  "ENEMY MISSED! DID THEY FORGET THEIR GLASSES?",
+  "MISS! THE SEA’S GAINING CONFIDENCE!",
+  "THEY’RE MISSING! MAYBE THEY’RE PLAYING DARTS!",
+  "MISS! ARE THEY AIMING FOR THE MOON?",
+  "ENEMY’S SHOT MISSED! EVEN THE OCEAN’S GIGGLING!",
+  "ENEMY MISSED! DID THEY DROP THE GPS?",
+  "MISS! MAYBE THEY’RE AIMING FOR A UFO?",
+  "THEY MISSED! ARE THEY TRYING TO SHOOT THE SUN?",
+  "OOPS! THEY’RE THROWING WATERBALLS NOW!",
+  "ENEMY’S SHOT WENT TO THE OCEAN FLOOR!",
+  "ENEMY MISSED AGAIN. YAWN, BORING!",
+  "MISS! THIS IS GETTING OLD FAST.",
+  "THEY MISSED! WE'RE SO BORED OF THIS.",
+  "ANOTHER MISS. DO THEY EVER HIT ANYTHING?",
+  "ENEMY’S SHOT WENT WIDE. HO-HUM, NEXT!"
+];
+const playerEnemyHitOurShip = [
+  "OUCH! THEY GOT US. LET’S BOUNCE BACK!",
+  "HIT! THEY’RE GETTING CLOSER. STAY ALERT!",
+  "WE’RE HIT! TIME TO REACT AND STRIKE BACK!",
+  "GOT US! BUT WE’LL TURN THIS AROUND!",
+  "THEY HIT US! LET’S REGROUP AND PUSH ON!",
+  "OUCH! THEY GOT US. WE'LL RECOVER!",
+  "HIT! TIME TO RETHINK OUR STRATEGY!",
+  "THEY HIT US! LET’S SHAKE IT OFF AND FIGHT!",
+  "GOT US GOOD! LET’S SHOW THEM OUR RESILIENCE!",
+  "WE’RE HIT! STAY FOCUSED AND STRIKE BACK!",
+  "HIT! NO TIME TO PANIC, LET'S COUNTERATTACK!",
+  "ENEMY’S SHOT LANDED! TIME TO REGAIN CONTROL!",
+  "WE TOOK A HIT! TIME TO TURN THE TIDE!",
+  "OUCH! THEY’RE HITTING HARD, LET’S PUSH BACK!",
+  "THEY GOT US! STAY STRONG AND FIGHT ON!",
+  "HIT! OUR SHIP’S SHAKING, BUT WE’RE STILL IN IT!",
+  "THEY GOT US! LET’S MAKE THIS AN EPIC COMEBACK!",
+  "HIT! THIS IS GONNA HURT, CAPTAIN.",
+  "OUCH! WE'RE TAKING DAMAGE, BUT WE'LL RECOVER.",
+  "GOT US GOOD. LET'S TRY TO STAY IN THE FIGHT.",
+  "HIT! NOT THE NEWS WE WANTED.",
+  "THEY STRUCK US. HOPE WE CAN TURN THIS AROUND.",
+  "WE’RE HIT. THIS ISN’T THE BEST DAY.",
+  "OUCH! WE’RE TAKING A BEATING HERE.",
+  "THEY HIT US. LET'S TRY TO STAY STRONG.",
+  "HIT! THIS ISN’T GOING AS PLANNED.",
+  "GOT US! WE’RE IN A TOUGH SPOT."
+];
+const playerShipIsSunk = [
+  "OUR SHIP’S GONE! THANKS FOR THE SWIM!",
+  "DESTROYED! OUR SHIP’S ON VACATION DEEP DOWN!",
+  "GONE! ENEMY TURNED OUR SHIP INTO REEF!",
+  "SHIP DOWN! WE’RE FLOATING, ENEMY’S WINNING!",
+  "DESTROYED! OUR SHIP’S NOW A SUBMARINE!",
+  "OUR SHIP’S GONE! ENEMY’S NOW A DIVING EXPERT!",
+  "SHIP ANNIHILATED! WE’RE FLOATING AROUND!",
+  "GONE! ENEMY MADE OUR SHIP A DEEP SEA ART!",
+  "DESTROYED! OUR SHIP’S A FLOATING MEMORIAL!",
+  "SHIP TAKEN OUT! WE’RE ALL ABOUT LIFE RAFTS NOW!",
+  "DESTROYED! WE’RE FLOATING NOW!",
+  "GONE! WE’LL HAVE TO REBUILD OR START FISHING!",
+  "GONE! OUR SHIP’S BEEN TAKEN OUT.",
+  "SHIP TAKEN OUT! WE’LL FIGHT ANOTHER DAY.",
+  "SHIP ANNIHILATED! LET’S PLAN OUR NEXT MOVE."
+];
 
 
 console.log("ENEMY BOARD:");
@@ -563,18 +634,22 @@ function randomAttackCPU(){
         victoryText.textContent = "Enemy won!";
         dialog.showModal();
       }
+      writeText(playerShipIsSunk, UserCommandText);
       nextAtack = null;
     }else{
       //-------------------------
+      writeText(playerEnemyHitOurShip, UserCommandText);
       console.log("planning...");
       console.log("x: " + row + " y: " + column);
       avaiableCells = getAvaiableCells(curAttackedShip.row, curAttackedShip.column) //get avaiable cells
       
     }
+      
   //NOT HIT
   }else{
     playerCELLS[((row*10)+column)].classList.add("clicked");
     playerCELLS[((row*10)+column)].classList.add("explode");
+    writeText(playerEnemymiss, UserCommandText);
     nextAtack = null;
   }
 }
@@ -603,7 +678,9 @@ async function cpuPlayTurn(){
             dialog.showModal();
           }
           curAttackedShip = null;
+          writeText(playerShipIsSunk, UserCommandText);
         }else{ 
+          writeText(playerEnemyHitOurShip, UserCommandText);
           if(attack.dir == "left" || attack.dir == "right"){
             console.log("ship is in X axis");
             curAxis = "x";
@@ -620,6 +697,7 @@ async function cpuPlayTurn(){
       }else{
         playerCELLS[((attack.x*10)+attack.y)].classList.add("clicked");
         playerCELLS[((attack.x*10)+attack.y)].classList.add("explode");
+        writeText(playerEnemymiss, UserCommandText);
         console.log("NOT WORKED");
       }
       if(avaiableCells.length == 0 && curAxis == null){
@@ -652,12 +730,16 @@ async function cpuPlayTurn(){
                   victoryText.textContent = "Enemy won!";
                   dialog.showModal();
                 }
+                
+                writeText(playerShipIsSunk, UserCommandText);
               }else{
+                writeText(playerEnemyHitOurShip, UserCommandText);
                 lastAttack = {x: lastAttack.x, y: lastAttack.y-1, dir:lastAttack.dir};
               }
             }else{
               playerCELLS[((lastAttack.x*10)+lastAttack.y-1)].classList.add("clicked");
               playerCELLS[((lastAttack.x*10)+lastAttack.y-1)].classList.add("explode");
+              writeText(playerEnemymiss, UserCommandText);
               curAxis = null;
             }
           }else{
@@ -687,12 +769,15 @@ async function cpuPlayTurn(){
                   victoryText.textContent = "Enemy won!";
                   dialog.showModal();
                 }
+                writeText(playerShipIsSunk, UserCommandText);
               }else{
+                writeText(playerEnemyHitOurShip, UserCommandText);
                 lastAttack = {x: lastAttack.x, y: lastAttack.y+1, dir:lastAttack.dir};
               }
             }else{
               playerCELLS[((lastAttack.x*10)+lastAttack.y+1)].classList.add("clicked");
               playerCELLS[((lastAttack.x*10)+lastAttack.y+1)].classList.add("explode");
+              writeText(playerEnemymiss, UserCommandText);
               curAxis = null;
             }
           }else{
@@ -724,12 +809,15 @@ async function cpuPlayTurn(){
                   victoryText.textContent = "Enemy won!";
                   dialog.showModal();
                 }
+                writeText(playerShipIsSunk, UserCommandText);
               }else{
+                writeText(playerEnemyHitOurShip, UserCommandText);
                 lastAttack = {x: lastAttack.x-1, y: lastAttack.y, dir:lastAttack.dir};
               }
             }else{
               playerCELLS[(((lastAttack.x-1)*10)+lastAttack.y)].classList.add("clicked");
               playerCELLS[(((lastAttack.x-1)*10)+lastAttack.y)].classList.add("explode");
+              writeText(playerEnemymiss, UserCommandText);
               curAxis = null;
             }
           }else{
@@ -759,12 +847,15 @@ async function cpuPlayTurn(){
                   victoryText.textContent = "Enemy won!";
                   dialog.showModal();
                 }
+                writeText(playerShipIsSunk, UserCommandText);
               }else{
+                writeText(playerEnemyHitOurShip, UserCommandText);
                 lastAttack = {x: lastAttack.x+1, y: lastAttack.y, dir:lastAttack.dir};
               }
             }else{
               playerCELLS[(((lastAttack.x+1)*10)+lastAttack.y)].classList.add("clicked");
               playerCELLS[(((lastAttack.x+1)*10)+lastAttack.y)].classList.add("explode");
+              writeText(playerEnemymiss, UserCommandText);
               curAxis = null;
             }
           }else{
@@ -823,7 +914,7 @@ async function playerClick(i, CPU_cells){
     }
     curTurn = "cpu";
     //CPU TURN
-    await sleep(2500);
+    await sleep(2800);
     cpuPlayTurn();
   }
 }

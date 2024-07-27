@@ -303,6 +303,6 @@
 }
 .runWriting{
     animation: 
-    typing 2s,
+    typing 1s,
     cursor 0.5s step-end infinite alternate;
 }
