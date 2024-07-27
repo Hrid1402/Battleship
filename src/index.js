@@ -383,92 +383,195 @@ let realPlayer = new Player(myGameboard.board, ships);
 let cpuPlayer = new Player(enemyBoard, enemy_ships);
 let avaiable  = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90, 91, 92, 93, 94, 95, 96, 97, 98, 99];
 
-let nextAtack = null;
 
 //CPU
 let playerCELLS = getPlayerCELLS();
 let curAttackedShip = null;
 let avaiableCells = [];
+let curAxis = null; // x
+let lastAttack = null; // data
 
-function cpuPlayTurn(){
+
+
+function randomAttackCPU(){
   let randomPos = null;
   let row = null;
-  let column = null;
+  let column = null; 
+  randomPos = getRandomInt(0, avaiable.length-1);
+  let randomPosValue = avaiable[randomPos];
+  //row = Math.floor(i/10), column = Math.floor(i%10)
+  row = Math.floor(randomPosValue / 10);
+  column = Math.floor(randomPosValue % 10);
+  console.log("-------------------------------------------------")
+  const playerAttackData = realPlayer.receiveAttack(row, column);
   
-  if(curAttackedShip == null){
-    if(nextAtack != null){
-      row = nextAtack.x;
-      column = nextAtack.y;
-      let value = ((row*10)+column);
-      randomPos = avaiable.indexOf(value);
-    }else{
-      randomPos = getRandomInt(0, avaiable.length-1);
-      let randomPosValue = avaiable[randomPos];
-      //row = Math.floor(i/10), column = Math.floor(i%10)
-      row = Math.floor(randomPosValue / 10);
-      column = Math.floor(randomPosValue % 10);
+  avaiable.splice(randomPos, 1);
+  //CHECK
+  if(playerAttackData.hit){
+    //HIT
+    playerCELLS[((row*10)+column)].classList.add("fire");
+    if(curAttackedShip == null){
+      curAttackedShip = {row : row, column : column};
     }
-    console.log("-------------------------------------------------")
-    const playerAttackData = realPlayer.receiveAttack(row, column);
-    
-    avaiable.splice(randomPos, 1);
-    //CHECK
-    if(playerAttackData.hit){
-      //HIT
-      playerCELLS[((row*10)+column)].classList.add("fire");
-      if(curAttackedShip == null){
-        curAttackedShip = {row : row, column : column};
-      }
-      if(playerAttackData.sunked){
-        //To read
-        curAttackedShip = null;
-        let icons = getPlayerICONS();
-        console.log(icons);
-        icons[playerAttackData.id].classList.add("sunkedICON");
-        realPlayer.remainingShips--;
-        if(realPlayer.remainingShips == 0){
-          console.log("ENEMY WINS!");
-          victoryText.textContent = "Enemy won!";
-          dialog.showModal();
-        }
-        nextAtack = null;
-      }else{
-        //-------------------------
-        console.log("planning...");
-        console.log("x: " + row + " y: " + column);
-        avaiableCells = getAvaiableCells(curAttackedShip.row, curAttackedShip.column) //get avaiable cells
-        
-      }
-    //NOT HIT
-    }else{
-      playerCELLS[((row*10)+column)].classList.add("clicked");
-      nextAtack = null;
-    }
-  }else{
-
-    const attack = getRandomAvaibleAttack();
-    const attackData = realPlayer.receiveAttack(attack.x, attack.y);
-    if(attackData.hit){
-      playerCELLS[((attack.x*10)+attack.y)].classList.add("fire");
-      console.log("WORKED");
-    }else{
-      playerCELLS[((attack.x*10)+attack.y)].classList.add("clicked");
-      console.log("NOT WORKED");
-    }
-
-
-
-
-
-
-
-
-
-
-    if(avaiableCells.length == 0){
-      console.log("last try");
+    if(playerAttackData.sunked){
+      //To read
       curAttackedShip = null;
+      let icons = getPlayerICONS();
+      console.log(icons);
+      icons[playerAttackData.id].classList.add("sunkedICON");
+      realPlayer.remainingShips--;
+      if(realPlayer.remainingShips == 0){
+        console.log("ENEMY WINS!");
+        victoryText.textContent = "Enemy won!";
+        dialog.showModal();
+      }
+      nextAtack = null;
+    }else{
+      //-------------------------
+      console.log("planning...");
+      console.log("x: " + row + " y: " + column);
+      avaiableCells = getAvaiableCells(curAttackedShip.row, curAttackedShip.column) //get avaiable cells
+      
     }
+  //NOT HIT
+  }else{
+    playerCELLS[((row*10)+column)].classList.add("clicked");
+    nextAtack = null;
+  }
+}
+
+
+function cpuPlayTurn(){
+  console.log(avaiable);
+  console.log(avaiable.length);
+  if(curAttackedShip == null){
+    randomAttackCPU();
+  }else{
+    if(curAxis == null){
+      const attack = getRandomAvaibleAttack();
+      const attackData = realPlayer.receiveAttack(attack.x, attack.y);
+      avaiable.splice(avaiable.indexOf((attack.x*10)+attack.y), 1);
+      if(attackData.hit){
+        playerCELLS[((attack.x*10)+attack.y)].classList.add("fire");
+        if(attackData.sunked){
+          let icons = getPlayerICONS();
+          icons[attackData.id].classList.add("sunkedICON");
+          realPlayer.remainingShips--;
+          if(realPlayer.remainingShips == 0){
+            console.log("ENEMY WINS!");
+            victoryText.textContent = "Enemy won!";
+            dialog.showModal();
+          }
+          curAttackedShip = null;
+        }else{ 
+          if(attack.dir == "left" || attack.dir == "right"){
+            console.log("ship is in X axis");
+            curAxis = "x";
+            lastAttack = {x: attack.x, y: attack.y, dir: attack.dir};
+          }else{
+            console.log("ship is in Y axis");
+            curAxis = "y";
+            lastAttack = {x: attack.x, y: attack.y, dir: attack.dir};
+          }
+          
+          console.log("WORKED");
+        }
+      
+      }else{
+        playerCELLS[((attack.x*10)+attack.y)].classList.add("clicked");
+        console.log("NOT WORKED");
+      }
+      if(avaiableCells.length == 0 && curAxis == null){
+        console.log("last try");
+        curAttackedShip = null;
+      }
+    }else{
+      console.log("LAST ATTACK:")
+      console.log(lastAttack);
+      if(curAxis = "x"){
+        //left
+        if(lastAttack.dir == "left"){
+          console.log("TRIYING TO ATTACK LEFT")
+          if(lastAttack.y-1 >= 0 && avaiable.includes((lastAttack.x*10)+lastAttack.y-1)){
+            console.log("Able to attack left");
+            avaiable.splice(avaiable.indexOf((lastAttack.x*10)+lastAttack.y-1), 1);
+            const attackData = realPlayer.receiveAttack(lastAttack.x, lastAttack.y-1);
+            if(attackData.hit){
+              playerCELLS[((lastAttack.x*10)+lastAttack.y-1)].classList.add("fire");
+              if(attackData.sunked){
+                let icons = getPlayerICONS();
+                icons[attackData.id].classList.add("sunkedICON");
+                curAxis = null;
+                curAttackedShip = null;
+                realPlayer.remainingShips--;
+                if(realPlayer.remainingShips == 0){
+                  console.log("ENEMY WINS!");
+                  victoryText.textContent = "Enemy won!";
+                  dialog.showModal();
+                }
+              }else{
+                lastAttack = {x: lastAttack.x, y: lastAttack.y-1, dir:lastAttack.dir};
+              }
+            }else{
+              playerCELLS[((lastAttack.x*10)+lastAttack.y-1)].classList.add("clicked");
+              curAxis = null;
+            }
+          }else{
+            console.log("NOT ABLE TO ATTACK LEFT");
+            curAxis = null;
+            curAttackedShip = null;
+            randomAttackCPU();
+          }
+        }
+        //right
+        if(lastAttack.dir == "right"){
+          console.log("TRIYING TO ATTACK RIGHT")
+          if(lastAttack.y+1 <= 9 && avaiable.includes((lastAttack.x*10)+lastAttack.y+1)){
+            console.log("Able to attack right");
+            avaiable.splice(avaiable.indexOf((lastAttack.x*10)+lastAttack.y+1), 1);
+            const attackData = realPlayer.receiveAttack(lastAttack.x, lastAttack.y+1);
+            if(attackData.hit){
+              playerCELLS[((lastAttack.x*10)+lastAttack.y+1)].classList.add("fire");
+              if(attackData.sunked){
+                let icons = getPlayerICONS();
+                icons[attackData.id].classList.add("sunkedICON");
+                curAxis = null;
+                curAttackedShip = null;
+                realPlayer.remainingShips--;
+                if(realPlayer.remainingShips == 0){
+                  console.log("ENEMY WINS!");
+                  victoryText.textContent = "Enemy won!";
+                  dialog.showModal();
+                }
+              }else{
+                lastAttack = {x: lastAttack.x, y: lastAttack.y+1, dir:lastAttack.dir};
+              }
+            }else{
+              playerCELLS[((lastAttack.x*10)+lastAttack.y+1)].classList.add("clicked");
+              curAxis = null;
+            }
+          }else{
+            console.log("NOT ABLE TO ATTACK RIGHT");
+            curAxis = null;
+            curAttackedShip = null;
+            randomAttackCPU();
+          }
+        }
+      }
+
+    }
+    
+
+
+
+
+
+
+
+
+
+
+    
     
     
   }
