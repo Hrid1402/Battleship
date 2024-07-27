@@ -464,6 +464,7 @@ function randomAttackCPU(){
   //NOT HIT
   }else{
     playerCELLS[((row*10)+column)].classList.add("clicked");
+    playerCELLS[((row*10)+column)].classList.add("explode");
     nextAtack = null;
   }
 }
@@ -508,6 +509,7 @@ async function cpuPlayTurn(){
       
       }else{
         playerCELLS[((attack.x*10)+attack.y)].classList.add("clicked");
+        playerCELLS[((attack.x*10)+attack.y)].classList.add("explode");
         console.log("NOT WORKED");
       }
       if(avaiableCells.length == 0 && curAxis == null){
@@ -545,6 +547,7 @@ async function cpuPlayTurn(){
               }
             }else{
               playerCELLS[((lastAttack.x*10)+lastAttack.y-1)].classList.add("clicked");
+              playerCELLS[((lastAttack.x*10)+lastAttack.y-1)].classList.add("explode");
               curAxis = null;
             }
           }else{
@@ -579,6 +582,7 @@ async function cpuPlayTurn(){
               }
             }else{
               playerCELLS[((lastAttack.x*10)+lastAttack.y+1)].classList.add("clicked");
+              playerCELLS[((lastAttack.x*10)+lastAttack.y+1)].classList.add("explode");
               curAxis = null;
             }
           }else{
@@ -615,6 +619,7 @@ async function cpuPlayTurn(){
               }
             }else{
               playerCELLS[(((lastAttack.x-1)*10)+lastAttack.y)].classList.add("clicked");
+              playerCELLS[(((lastAttack.x-1)*10)+lastAttack.y)].classList.add("explode");
               curAxis = null;
             }
           }else{
@@ -649,6 +654,7 @@ async function cpuPlayTurn(){
               }
             }else{
               playerCELLS[(((lastAttack.x+1)*10)+lastAttack.y)].classList.add("clicked");
+              playerCELLS[(((lastAttack.x+1)*10)+lastAttack.y)].classList.add("explode");
               curAxis = null;
             }
           }else{
@@ -696,10 +702,11 @@ async function playerClick(i, CPU_cells){
       
     }else{
       CPU_cells[i].classList.add("clicked");
+      CPU_cells[i].classList.add("explode");
     }
     curTurn = "cpu";
     //CPU TURN
-    await sleep(1500);
+    await sleep(2500);
     cpuPlayTurn();
     
   }

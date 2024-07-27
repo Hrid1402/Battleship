@@ -196,8 +196,8 @@
 .CPU_board .CPU_board_grid .CPU_cell:hover{
     background-color: #5c5c5c;
 }
-.CPU_board .CPU_board_grid .CPU_cell:active {
-    animation: explode 1s ease-out;
+.explode {
+    animation: explode 0.5s ease-out;
 }
 
 @keyframes explode {
@@ -206,7 +206,7 @@
         opacity: 1;
     }
     50% {
-        transform: scale(1.4);
+        transform: scale(1.3);
         opacity: 0.8;
     }
     100% {
