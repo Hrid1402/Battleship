@@ -325,6 +325,21 @@ function addCPUboard(CPUinf, boards){
 
     CPU_bottom.append(CPU_shipsHolder);
 
+    const cpuTextContainer = document.createElement('div');
+    cpuTextContainer.classList.add('CPU_TextContainer');
+
+    const container = document.createElement('div');
+    container.classList.add('CPU_container');
+
+    const cpuuText = document.createElement('h2');
+    cpuuText.textContent = "AHOY, LANDLUBBER! READY TO FACE THE MASTER OF THE SEA?";
+
+    cpuText = cpuuText;
+    container.append(cpuText);
+    cpuTextContainer.append(container);
+
+    CPU_board.append(cpuTextContainer);
+
     CPU_board.append(CPU_board_letters);
     CPU_board.append(CPU_middle);
     CPU_board.append(CPU_bottom);

@@ -7,6 +7,7 @@ const exp1 = require('./imgs/Explotion1.mp3');
 const exp2 = require('./imgs/Explotion2.mp3');
 const exp3 = require('./imgs/Explotion3.mp3');
 const exp4 = require('./imgs/Explotion4.mp3');
+let gameover = false;
 
 const explotion1 = new Audio(exp1);
 const explotion2 = new Audio(exp2);
@@ -244,7 +245,6 @@ function resetShips(){
     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
   ];
-  console.log(myGameboard.board);
 
 }
 resetBTN.addEventListener("click", resetShips);
@@ -352,11 +352,7 @@ class Player {
   receiveAttack(row, column) {
     if (this.board[row][column] != 0 && this.board[row][column] != "x") {
       let id = this.board[row][column];
-      console.log(this.board[row][column]);
       this.board[row][column] = "x";
-      console.log("hit");
-      console.log("id:" + id);
-      console.log(this.shipsData[id].curHits);
       this.shipsData[id].hit();
       this.shipsData[id].isSunk();
       return {hit: true, sunked: this.shipsData[id].sunk, id: id};
@@ -376,19 +372,15 @@ function getAvaiableCells(row, column){
   let attacksAvaiables = [];
 
   if(left >= 0 && avaiable.includes((row*10)+left)){      //try left
-    console.log("left able");
     attacksAvaiables.push({"x":row, "y":left, "dir": "left"});  
   }
   if(right <= 9 && avaiable.includes((row*10)+right)){ //try right
-    console.log("right able");
     attacksAvaiables.push({"x":row, "y":right , "dir": "right"});
   }
   if(up >= 0 && avaiable.includes((up*10)+column)){ //try up
-    console.log("up able");
     attacksAvaiables.push({"x":up, "y":column , "dir": "up"});
   }  
   if(down <= 9 && avaiable.includes((down*10)+column)){ //try down
-    console.log("down able");
     attacksAvaiables.push({"x":down, "y":column , "dir": "down"});
   }
   return attacksAvaiables;
@@ -397,8 +389,6 @@ function getRandomAvaibleAttack(){
   const randomIndex = getRandomInt(0, avaiableCells.length-1);
   let randomCell = avaiableCells[randomIndex];
   avaiableCells.splice(randomIndex,1);
-  console.log("SELECTED: " + randomCell.x + " " + randomCell.y);
-  console.log(avaiableCells);
   return randomCell;
 }
 //TEXT STUFF
@@ -581,11 +571,222 @@ const playerShipIsSunk = [
   "SHIP TAKEN OUT! WE’LL FIGHT ANOTHER DAY.",
   "SHIP ANNIHILATED! LET’S PLAN OUR NEXT MOVE."
 ];
+//ENEMY-------------------------------
+const enemyWhenPlayerMiss = [
+  "WHOOPS! DID YOU AIM FOR A WATERFALL?",
+  "HA HA! NICE SPLASH, DID YOU MISS?",
+  "YIKES! WAS THAT A FISHING ATTEMPT?",
+  "OOPS! DID YOU JUST CREATE A WATER PARK?",
+  "OH NO! YOUR SHOT WENT FOR A SWIM!",
+  "GOLLY! WAS THAT A WATER FEATURE?",
+  "BOO! DID YOUR SHOT TAKE A DIVE?",
+  "WHOOPS! YOUR AIM'S ALL SPLASHY!",
+  "YEAH! NICE WATER HOLE, TRY AGAIN!",
+  "OH DEAR! IS THAT A WATER PARTY?",
+  "OUCH! DID YOU JUST SPLASH THE OCEAN?",
+  "HA HA! YOUR SHOT’S A BIG WATER EXPLOSION!",
+  "YIKES! WAS THAT A WATER ATTACK?",
+  "WHOOPS! NICE SPLASH, DID YOU MISS ME?",
+  "OH BOY! YOUR SHOT MADE A WATER FEATURE!",
+  "BAM! AND WE HAVE A WATER SHOW!",
+  "GOLLY! WAS THAT A FISHING TRIP?",
+  "YEAH! YOUR SHOT WENT FOR A SWIM!",
+  "OOH! DID YOU JUST CREATE MINI WAVES?",
+  "WHOOPS! MY SHIP’S STILL SAFE, NICE SPLASH!",
+  "WOW, NICE AIM, DID YOU MISS ON PURPOSE?",
+  "IS THAT YOUR BEST SHOT? PATHETIC!",
+  "DID YOU JUST TRY TO WET THE OCEAN? EMBARRASSING!",
+  "HA! YOUR AIM IS TERRIBLE!",
+  "GREAT SHOT—IF YOU WERE AIMING FOR WATER!",
+  "SPLASH! IS THAT ALL YOU'VE GOT? SAD!",
+  "CAN’T EVEN HIT THE TARGET? LAME!",
+  "OH LOOK, A WATER FEATURE—HOW ORIGINAL!",
+  "YOUR AIM IS AS BAD AS YOUR STRATEGY!",
+  "MISS AGAIN? YOUR SHOTS ARE A JOKE!",
+  "WOW, YOUR SHOT’S A WATER FEATURE!",
+  "NICE AIM, DID YOU MISS ON PURPOSE?",
+  "SPLASH! YOUR SHOT’S A JOKE!",
+  "IS THAT A WATER PARK? SAD!",
+  "OH, GREAT, MORE WATER SHOWS!",
+  "MISS AGAIN? YOUR AIM’S HILARIOUS!",
+  "YOUR SHOT’S JUST A BIG SPLASH!",
+  "WOW, A WATER ATTACK—HOW CLEVER!",
+  "YOUR AIM IS A TRUE DISASTER!",
+  "OH BOY, A WATER FEATURE AGAIN?",
+  "..."
+]
+const enemyWhenPlayerHitHim =[
+  "LUCKY SHOT! DIDN’T SEE THAT COMING!",
+  "OUCH! NICE HIT—BUT LUCKY TOO!",
+  "WELL, THAT’S A HIT! LUCKY YOU, HUH?",
+  "BANG! A LUCKY STRIKE, WELL DONE!",
+  "WHOOPS! DID YOUR AIM FINALLY HIT?",
+  "WOW, A HIT! MUST BE A FLUKE!",
+  "YIKES! NICE SHOT—MUST BE PURE LUCK!",
+  "GOT ME! NICE LUCKY SHOT, CAPTAIN!",
+  "NICE HIT! I’LL GIVE YOU THAT, LUCKY ONE!",
+  "BAM! DID YOU GET LUCKY WITH THAT HIT?",
+  "MY SHIP! HOW DARE YOU HIT IT!",
+  "OUCH! MY SHIP IS TAKING DAMAGE!",
+  "OH NO! MY POOR SHIP, WHAT HAVE YOU DONE?",
+  "MY SHIP! YOU’RE MAKING ME LOSE IT!",
+  "EEK! MY SHIP’S BEEN HIT—AGAIN!",
+  "OH MY SHIP! THIS IS A DISASTER!",
+  "NO! MY SHIP’S GETTING BEAT UP!",
+  "MY SHIP! YOU’RE MAKING IT SINK!",
+  "AHH! MY SHIP’S TAKING A BEATING!",
+  "MY SHIP! HOW COULD YOU HIT IT SO HARD?",
+  "YAY! WAIT, THAT WAS MY SHIP?!",
+  "WOOHOO! OH NO, MY SHIP’S ON FIRE!",
+  "YIPPEE! OH WAIT, THAT’S MY SHIP!",
+  "WOW! DID I JUST GET HIT? THAT’S MY SHIP!",
+  "HURRAY! WAIT, MY SHIP’S GOING DOWN?!",
+  "WOO! DID MY SHIP JUST TAKE A HIT?!",
+  "HOO! OH, MY SHIP’S GOT A HOLE!",
+  "WELL, THAT’S A NEW MARK ON MY SHIP!",
+  "MY SHIP’S GOT A FRESH NEW DENT!",
+  "LOOKS LIKE MY SHIP’S GOT A NEW HOLE!",
+  "DID MY SHIP JUST GET A NEW SPLASH?",
+  "AH, MY SHIP’S GOT A NEW FEATURE!",
+  "MY SHIP’S JUST GOT A BIT MORE UNIQUE!",
+  "A NEW HOLE FOR MY SHIP, HOW NICE!",
+  "MY SHIP’S NOW PART OF YOUR ART!",
+  "WELL, THAT’S A NEW ADDITION TO MY SHIP!",
+  "MY SHIP’S GOT A NEW AQUATIC DECOR!"
+]
+const enemyWhenPlayerSunkHim = [
+  "AH, THAT WAS MY FAVORITE SHIP!",
+  "DAMN, MY BEST SHIP JUST WENT DOWN!",
+  "OH NO, MY SHIP’S GONE—IT WAS SPECIAL!",
+  "MY FAVORITE SHIP IS NOW A REEF!",
+  "SIGH, MY BEST SHIP’S BEEN LOST!",
+  "BAM! THAT WAS MY MOST LOVED SHIP!",
+  "UGH, MY FAVORITE SHIP IS NO MORE!",
+  "SO SAD, MY SHIP’S NOW A SEA MEMORY!",
+  "MY SHIP’S GONE—IT WAS MY FAVORITE!",
+  "MY BABY!!!",
+  "GONE! MY SHIP’S NOW A REEF.",
+  "OH NO, MY SHIP’S DOWN!",
+  "SO SAD, MY SHIP’S LOST.",
+  "MY SHIP’S SUNK—WHAT A SHAME!",
+  "MY SHIP’S OUT FOR GOOD.",
+  "WELL, MY SHIP’S DONE FOR.",
+  "SIGH, MY SHIP’S A GONER.",
+  "MY SHIP’S GONE—TOO BAD!",
+  "OUCH, MY SHIP’S SINKING!",
+  "MY SHIP’S OUT OF THE GAME!",
+  "THIS IS PERSONAL NOW.",
+  "YOU’VE CROSSED THE LINE.",
+  "THIS ISN’T OVER YET.",
+  "NOW IT’S WAR.",
+  "YOU’VE MADE IT PERSONAL.",
+  "THIS IS JUST THE BEGINNING.",
+  "NOW YOU’VE REALLY DONE IT.",
+  "YOU’VE AWAKENED THE BEAST."
+];
+const enemyHitWater =[
+  "I WAS JUST TESTING YOUR DEFENSES!",
+    "A LITTLE OFF, BUT I’LL GET IT NEXT TIME!",
+    "MY AIM’S JUST WARMING UP—WATCH OUT!",
+    "I’M JUST GIVING YOU A HEAD START!",
+    "EVERY GREAT STRATEGY HAS A MISSTEP!",
+    "JUST ADJUSTING FOR THE NEXT PERFECT SHOT!",
+    "A MINOR MISCALCULATION—NOTHING TO WORRY ABOUT!",
+    "SOMETIMES YOU HAVE TO MISS TO MAKE A BIGGER IMPACT!",
+    "WARM-UP SHOT—THE REAL STRIKE IS COMING!",
+    "NOT EVERY SHOT IS PERFECT—BUT I’LL GET IT RIGHT!",
+    "JUST WARMING UP—WATCH ME!",
+    "A SMALL MISS, BUT I’LL GET IT!",
+    "TEST SHOT—THE REAL ONE’S NEXT!",
+    "GIVING YOU A HEAD START!",
+    "JUST ADJUSTING MY AIM!",
+    "NOT EVERY SHOT IS PERFECT!",
+    "MINOR MISCALCULATION—NO WORRIES!",
+    "A LITTLE OFF, BUT I’LL HIT IT!",
+    "EARLY SHOT—THE BIG ONE’S COMING!",
+    "WARM-UP MISS—STAY ALERT!",
+    "WHERE THE HECK ARE YOU HIDING?",
+    "COME OUT, WHERE ARE YOU?",
+    "WHERE ARE YOU? THIS IS TOO EASY!",
+    "SHOW YOURSELF—WHERE ARE YOU?",
+    "HIDING? WHERE THE HECK ARE YOU?",
+    "HELLO? WHERE ARE YOU HIDING?",
+    "CAN’T HIT WHAT I CAN’T SEE—WHERE ARE YOU?",
+    "ARE YOU PLAYING HIDE AND SEEK? WHERE ARE YOU?",
+    "WHERE IN THE SEA ARE YOU HIDING?",
+    "COME OUT, WHERE THE HECK ARE YOU?",
+    "ARE YOU INVISIBLE? WHERE IN THE OCEAN ARE YOU?",
+    "HELLO? HAVE YOU GONE UNDERWATER?",
+    "AM I CHASING GHOSTS? WHERE ARE YOU?",
+    "HIDING, ARE WE? SHOW YOURSELF!",
+    "IS THIS A VANISHING ACT? WHERE HAVE YOU GONE?",
+    "WAIT, DID I MISS AGAIN? OOPS!",
+    "THINK I HIT? NEVER MIND, WHERE ARE YOU?",
+    "DID I JUST HIT WATER? WELL, THAT'S EMBARRASSING!",
+    "WHOOPS, DID I JUST SPLASH? THOUGHT I GOT YOU!",
+    "DID I JUST AIM FOR THE OCEAN? HILARIOUS!",
+    "OH, I WAS AIMING FOR THE WATER ALL ALONG!",
+    "MY TARGET? JUST TRYING TO CREATE A SPLASH ZONE!",
+    "ACTUALLY, I WAS PRACTICING MY WATER SHOTS!",
+    "I'M PERFECTING MY WATER STRATEGY—SEE?",
+    "INTENTIONAL MISS! JUST WANTED TO SPLASH SOME WATER!"
+]
+const enemyHitsShip = [
+      "WELL, LOOKS LIKE I’M JUST TOO GOOD!",
+      "OOOPS, DID I JUST HIT YOUR SHIP? MY BAD!",
+      "WASN’T EXPECTING TO HIT YOU—SURPRISE!",
+      "HIT YOUR SHIP? JUST A HAPPY ACCIDENT!",
+      "WELL, THAT’S ONE WAY TO GET YOUR ATTENTION!",
+      "DID I JUST HIT YOUR SHIP? NICE SURPRISE!",
+      "WELL, I’M HITTING TARGETS NOW!",
+      "WHOOPS! DID MY SHOT FIND YOUR SHIP?",
+      "OH, I WAS AIMING FOR THE SHIP—NAILED IT!",
+      "DID I JUST HIT YOU? WHO KNEW I WAS THIS GOOD?",
+      "WOW, I ACTUALLY HIT YOUR SHIP—AMAZING!",
+      "DID I JUST HIT YOU? I MUST BE A GENIUS!",
+      "OH, YOUR SHIP? THAT WAS TOO EASY!",
+      "HIT YOUR SHIP? WHO KNEW I WAS THIS ACCURATE!",
+      "GOT YOUR SHIP—MUST BE A FLUKE, RIGHT?",
+      "SORRY, WAS THAT YOUR SHIP? OOPS!",
+      "OH, THAT WAS YOUR SHIP? MY BAD!",
+      "DID I JUST HIT YOUR SHIP? SORRY ABOUT THAT!",
+      "WHOOPS! DID I DAMAGE YOUR SHIP? MY MISTAKE!",
+      "SORRY, DID I JUST HIT YOUR SHIP? HOW EMBARRASSING!",
+      "SORRY, DID I HIT YOUR SHIP?",
+      "OH, THAT WAS YOUR SHIP? MY BAD!",
+      "DID I JUST HIT YOUR SHIP? WHOOPS!",
+      "MY MISTAKE, WAS THAT YOUR SHIP?",
+      "SORRY, WAS THAT YOUR SHIP I HIT?",
+      "WOW, THAT WAS TOO EASY!",
+      "HIT YOUR SHIP? THAT WAS A BREEZE!",
+      "THIS IS JUST TOO EASY!",
+      "WELL, THAT WAS A PIECE OF CAKE!",
+      "YOUR SHIP? TOO SIMPLE TO HIT!"
+];
+const enemySunkPlayerShip = [
+  "BOOM! YOUR SHIP’S NOW A REEF!",
+  "DOWN SHE GOES—YOUR SHIP’S HISTORY!",
+  "SINKING YOUR SHIP WAS TOO EASY!",
+  "OUCH! YOUR SHIP JUST BECAME FISH FOOD!",
+  "GONE! YOUR SHIP’S OFF TO THE DEEP BLUE!",
+  "GG EZ",
+  "YOUR SHIP’S OFF TO THE OCEAN FLOOR!",
+  "SPLASH! YOUR SHIP’S UNDERWATER NOW!",
+  "YOUR SHIP’S GONE—WELCOME TO THE DEEP!",
+  "YOUR SHIP’S NOW A NEW FISH HABITAT!",
+  "BOOM! YOUR SHIP’S TAKING A DEEP DIVE!",
+  "HIPPITY HOPPITY, YOUR SHIP IS NOW WATER’S PROPERTY",
+  "SPLASH! YOUR SHIP’S IN THE DEPTHS!",
+  "DOWN SHE GOES, TO THE DEEP BELOW!",
+  "BOOM! YOUR SHIP’S GONE—ZOOOM!",
+  "YOUR SHIP’S OUT—WITH A BANG AND A SHOUT!",
+  "SINKING DEEP, YOUR SHIP’S ASLEEP!",
+  "EZ"
+];
 
 
-console.log("ENEMY BOARD:");
+
 let enemyBoard = placeEnemyShips();
-console.log(enemyBoard);
 
 let realPlayer = new Player(myGameboard.board, ships);
 
@@ -611,7 +812,6 @@ function randomAttackCPU(){
   //row = Math.floor(i/10), column = Math.floor(i%10)
   row = Math.floor(randomPosValue / 10);
   column = Math.floor(randomPosValue % 10);
-  console.log("-------------------------------------------------")
   const playerAttackData = realPlayer.receiveAttack(row, column);
   
   avaiable.splice(randomPos, 1);
@@ -626,7 +826,6 @@ function randomAttackCPU(){
       //To read
       curAttackedShip = null;
       let icons = getPlayerICONS();
-      console.log(icons);
       icons[playerAttackData.id].classList.add("sunkedICON");
       realPlayer.remainingShips--;
       if(realPlayer.remainingShips == 0){
@@ -635,12 +834,12 @@ function randomAttackCPU(){
         dialog.showModal();
       }
       writeText(playerShipIsSunk, UserCommandText);
+      writeText(enemySunkPlayerShip, cpuCommandText);
       nextAtack = null;
     }else{
       //-------------------------
       writeText(playerEnemyHitOurShip, UserCommandText);
-      console.log("planning...");
-      console.log("x: " + row + " y: " + column);
+      writeText(enemyHitsShip, cpuCommandText);
       avaiableCells = getAvaiableCells(curAttackedShip.row, curAttackedShip.column) //get avaiable cells
       
     }
@@ -650,14 +849,13 @@ function randomAttackCPU(){
     playerCELLS[((row*10)+column)].classList.add("clicked");
     playerCELLS[((row*10)+column)].classList.add("explode");
     writeText(playerEnemymiss, UserCommandText);
+    writeText(enemyHitWater, cpuCommandText);
     nextAtack = null;
   }
 }
 
 
 async function cpuPlayTurn(){
-  console.log(avaiable);
-  console.log(avaiable.length);
   playRandomExplotion();
   if(curAttackedShip == null){
     randomAttackCPU();
@@ -679,42 +877,33 @@ async function cpuPlayTurn(){
           }
           curAttackedShip = null;
           writeText(playerShipIsSunk, UserCommandText);
+          writeText(enemySunkPlayerShip, cpuCommandText);
         }else{ 
           writeText(playerEnemyHitOurShip, UserCommandText);
+          writeText(enemyHitsShip, cpuCommandText);
           if(attack.dir == "left" || attack.dir == "right"){
-            console.log("ship is in X axis");
             curAxis = "x";
             lastAttack = {x: attack.x, y: attack.y, dir: attack.dir};
           }else{
-            console.log("ship is in Y axis");
             curAxis = "y";
             lastAttack = {x: attack.x, y: attack.y, dir: attack.dir};
           }
-          
-          console.log("WORKED");
         }
       
       }else{
         playerCELLS[((attack.x*10)+attack.y)].classList.add("clicked");
         playerCELLS[((attack.x*10)+attack.y)].classList.add("explode");
         writeText(playerEnemymiss, UserCommandText);
-        console.log("NOT WORKED");
+        writeText(enemyHitWater, cpuCommandText);
       }
       if(avaiableCells.length == 0 && curAxis == null){
-        console.log("last try");
         curAttackedShip = null;
       }
     }else{
-      console.log("LAST ATTACK:")
-      console.log(lastAttack);
-      console.log("ACTUAL AXIS = " + curAxis);
       if(curAxis == "x"){
-        console.log("ESTAMOS AXIS X--------------------");
         //left
         if(lastAttack.dir == "left"){
-          console.log("TRIYING TO ATTACK LEFT")
           if(lastAttack.y-1 >= 0 && avaiable.includes((lastAttack.x*10)+lastAttack.y-1)){
-            console.log("Able to attack left");
             avaiable.splice(avaiable.indexOf((lastAttack.x*10)+lastAttack.y-1), 1);
             const attackData = realPlayer.receiveAttack(lastAttack.x, lastAttack.y-1);
             if(attackData.hit){
@@ -732,18 +921,20 @@ async function cpuPlayTurn(){
                 }
                 
                 writeText(playerShipIsSunk, UserCommandText);
+                writeText(enemySunkPlayerShip, cpuCommandText);
               }else{
                 writeText(playerEnemyHitOurShip, UserCommandText);
+                writeText(enemyHitsShip, cpuCommandText);
                 lastAttack = {x: lastAttack.x, y: lastAttack.y-1, dir:lastAttack.dir};
               }
             }else{
               playerCELLS[((lastAttack.x*10)+lastAttack.y-1)].classList.add("clicked");
               playerCELLS[((lastAttack.x*10)+lastAttack.y-1)].classList.add("explode");
               writeText(playerEnemymiss, UserCommandText);
+              writeText(enemyHitWater, cpuCommandText);
               curAxis = null;
             }
           }else{
-            console.log("NOT ABLE TO ATTACK LEFT");
             curAxis = null;
             curAttackedShip = null;
             randomAttackCPU();
@@ -751,9 +942,7 @@ async function cpuPlayTurn(){
         }
         //right
         if(lastAttack.dir == "right"){
-          console.log("TRIYING TO ATTACK RIGHT")
           if(lastAttack.y+1 <= 9 && avaiable.includes((lastAttack.x*10)+lastAttack.y+1)){
-            console.log("Able to attack right");
             avaiable.splice(avaiable.indexOf((lastAttack.x*10)+lastAttack.y+1), 1);
             const attackData = realPlayer.receiveAttack(lastAttack.x, lastAttack.y+1);
             if(attackData.hit){
@@ -770,30 +959,29 @@ async function cpuPlayTurn(){
                   dialog.showModal();
                 }
                 writeText(playerShipIsSunk, UserCommandText);
+                writeText(enemySunkPlayerShip, cpuCommandText);
               }else{
                 writeText(playerEnemyHitOurShip, UserCommandText);
+                writeText(enemyHitsShip, cpuCommandText);
                 lastAttack = {x: lastAttack.x, y: lastAttack.y+1, dir:lastAttack.dir};
               }
             }else{
               playerCELLS[((lastAttack.x*10)+lastAttack.y+1)].classList.add("clicked");
               playerCELLS[((lastAttack.x*10)+lastAttack.y+1)].classList.add("explode");
               writeText(playerEnemymiss, UserCommandText);
+              writeText(enemyHitWater, cpuCommandText);
               curAxis = null;
             }
           }else{
-            console.log("NOT ABLE TO ATTACK RIGHT");
             curAxis = null;
             curAttackedShip = null;
             randomAttackCPU();
           }
         }
       }else{
-        console.log("ESTAMOS AXIS Y--------------------");
         //up
         if(lastAttack.dir == "up"){
-          console.log("TRIYING TO ATTACK UP")
           if(lastAttack.x-1 >= 0 && avaiable.includes(((lastAttack.x-1)*10)+lastAttack.y)){
-            console.log("Able to attack up");
             avaiable.splice(avaiable.indexOf(((lastAttack.x-1)*10)+lastAttack.y), 1);
             const attackData = realPlayer.receiveAttack(lastAttack.x-1, lastAttack.y);
             if(attackData.hit){
@@ -810,28 +998,27 @@ async function cpuPlayTurn(){
                   dialog.showModal();
                 }
                 writeText(playerShipIsSunk, UserCommandText);
+                writeText(enemySunkPlayerShip, cpuCommandText);
               }else{
                 writeText(playerEnemyHitOurShip, UserCommandText);
+                writeText(enemyHitsShip, cpuCommandText);
                 lastAttack = {x: lastAttack.x-1, y: lastAttack.y, dir:lastAttack.dir};
               }
             }else{
               playerCELLS[(((lastAttack.x-1)*10)+lastAttack.y)].classList.add("clicked");
               playerCELLS[(((lastAttack.x-1)*10)+lastAttack.y)].classList.add("explode");
               writeText(playerEnemymiss, UserCommandText);
+              writeText(enemyHitWater, cpuCommandText);
               curAxis = null;
             }
           }else{
-            console.log("NOT ABLE TO ATTACK UP");
             curAxis = null;
             curAttackedShip = null;
             randomAttackCPU();
           }
         }
         //down
-        if(lastAttack.dir == "down"){
-          console.log("TRIYING TO ATTACK DOWN")
-          if(lastAttack.x+1 <= 9 && avaiable.includes(((lastAttack.x+1)*10)+lastAttack.y)){
-            console.log("Able to attack down");
+        if(lastAttack.dir == "down"){          if(lastAttack.x+1 <= 9 && avaiable.includes(((lastAttack.x+1)*10)+lastAttack.y)){
             avaiable.splice(avaiable.indexOf(((lastAttack.x+1)*10)+lastAttack.y), 1);
             const attackData = realPlayer.receiveAttack(lastAttack.x+1, lastAttack.y);
             if(attackData.hit){
@@ -848,18 +1035,20 @@ async function cpuPlayTurn(){
                   dialog.showModal();
                 }
                 writeText(playerShipIsSunk, UserCommandText);
+                writeText(enemySunkPlayerShip, cpuCommandText);
               }else{
                 writeText(playerEnemyHitOurShip, UserCommandText);
+                writeText(enemyHitsShip, cpuCommandText);
                 lastAttack = {x: lastAttack.x+1, y: lastAttack.y, dir:lastAttack.dir};
               }
             }else{
               playerCELLS[(((lastAttack.x+1)*10)+lastAttack.y)].classList.add("clicked");
               playerCELLS[(((lastAttack.x+1)*10)+lastAttack.y)].classList.add("explode");
               writeText(playerEnemymiss, UserCommandText);
+              writeText(enemyHitWater, cpuCommandText);
               curAxis = null;
             }
           }else{
-            console.log("NOT ABLE TO ATTACK DOWN");
             curAxis = null;
             curAttackedShip = null;
             randomAttackCPU();
@@ -899,37 +1088,44 @@ async function playerClick(i, CPU_cells){
           console.log("YOU WIN");
           victoryText.textContent = "You won!";
           writeText(playerVictory, UserCommandText);
-          dialog.showModal();
+          writeText(enemyWhenPlayerSunkHim, cpuCommandText);
+          dialog.showModal(); 
+          gameover = true;
         }else{
           writeText(playerSunkShip, UserCommandText);
+          writeText(enemyWhenPlayerSunkHim, cpuCommandText);
         }
       }else{
         writeText(playerHitShip, UserCommandText);
+        writeText(enemyWhenPlayerHitHim, cpuCommandText);
       }
       
     }else{
       CPU_cells[i].classList.add("clicked");
       CPU_cells[i].classList.add("explode");
       writeText(playerHitWater, UserCommandText);
+      writeText(enemyWhenPlayerMiss, cpuCommandText);
     }
     curTurn = "cpu";
     //CPU TURN
-    await sleep(2800);
-    cpuPlayTurn();
+    if(gameover == false){
+      await sleep(3800);
+      cpuPlayTurn();
+    }
+    
   }
 }
 
 function ready(){
   if(checkShipsOnBoard()){
     console.log("READY");
-    console.log("FINAL BOARD:");
     console.log(myGameboard.board);
-    console.log(ALL_SHIPS_INF);
     dragShipsMenu.remove();
     addBoards(ALL_SHIPS_INF, enemyInfo);
     let CPU_cells = getCpuCells();
     CommandsText = getPlayerAndCpuText();
     UserCommandText = CommandsText.player;
+    cpuCommandText = CommandsText.cpu;
     for(let i = 0; i < CPU_cells.length; i++){
       CPU_cells[i].addEventListener("click", ()=>{
       playerClick(i, CPU_cells);
@@ -945,9 +1141,7 @@ readyBTN.addEventListener("click", ready);
 
 
 function startingDrag(ship){
-  console.log(ALL_SHIPS_INF[curShipID]);
   if(ALL_SHIPS_INF[curShipID].direction!=null){
-    console.log("----");
     curDirection = ALL_SHIPS_INF[curShipID].direction;
   }else{
     curDirection = "v";
