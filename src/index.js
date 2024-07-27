@@ -696,6 +696,7 @@ function ready(){
     }
   }else{
     console.log("NOT READY");
+    alert("You need to place all ships on the board first");
   }
   
 }

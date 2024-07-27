@@ -7,9 +7,9 @@
 #WINdialog{
     border-radius:25px;
     border: 5px solid rgb(97, 97, 97);
-    background-color: #a4a3a4;
     height: 70%;
     width: 30%;
+    background-color: #a3a5a3;
 }
 .divDialog{
     height: 100%;
@@ -196,6 +196,26 @@
 .CPU_board .CPU_board_grid .CPU_cell:hover{
     background-color: #5c5c5c;
 }
+.CPU_board .CPU_board_grid .CPU_cell:active {
+    animation: explode 1s ease-out;
+}
+
+@keyframes explode {
+    0% {
+        transform: scale(1);
+        opacity: 1;
+    }
+    50% {
+        transform: scale(1.4);
+        opacity: 0.8;
+    }
+    100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+
 
 .CPU_board .CPU_bottom .CPU_text{
     display: flex;
