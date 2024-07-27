@@ -26,7 +26,7 @@ module.exports = {
                 use:["html-loader"]
             },
             {
-                test: /\.(svg|png|jpg|gif)$/,
+                test: /\.(svg|png|jpg|gif|ogg|mp3|wav)$/,
                 type: 'asset/resource', // Use the 'asset/resource' module type instead of 'file-loader'
                 generator: {
                 filename: 'imgs/[name].[hash][ext]', // No change needed here

@@ -2,7 +2,35 @@ import("./style.css");
 import("./mainboard.css");
 const { addBoards, getCpuCells, getCpuSHIPS, getCpuICONS, getPlayerCELLS, getPlayerICONS} = require("./DOM.js");
 
+//sound
+const exp1 = require('./imgs/Explotion1.mp3');
+const exp2 = require('./imgs/Explotion2.mp3');
+const exp3 = require('./imgs/Explotion3.mp3');
+const exp4 = require('./imgs/Explotion4.mp3');
+
+const explotion1 = new Audio(exp1);
+const explotion2 = new Audio(exp2);
+const explotion3 = new Audio(exp3);
+const explotion4 = new Audio(exp4);
+
+const explosions = [explotion1, explotion2, explotion3, explotion4];
+
+function playRandomExplotion() {
+  // Stop all currently playing explosions
+  explosions.forEach(explosion => {
+    if (!explosion.paused) {
+      explosion.pause();
+      explosion.currentTime = 0;
+    }
+  });
+
+  // Play a random explosion
+  const random = Math.floor(Math.random() * 4);
+  explosions[random].play().catch(e => console.error("Error playing audio:", e));
+}
+
 console.log("Working");
+
 const carrierSVG = document.querySelector(".carrierSVG");
 const battleshipSVG = document.querySelector(".battleshipSVG");
 const cruiserSVG = document.querySelector(".cruiserSVG");
@@ -441,9 +469,10 @@ function randomAttackCPU(){
 }
 
 
-function cpuPlayTurn(){
+async function cpuPlayTurn(){
   console.log(avaiable);
   console.log(avaiable.length);
+  playRandomExplotion();
   if(curAttackedShip == null){
     randomAttackCPU();
   }else{
@@ -633,21 +662,47 @@ function cpuPlayTurn(){
 
     }
     
+  }
+  await sleep(1500);
+  curTurn = "player";
+}
+function sleep(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
 
+async function playerClick(i, CPU_cells){
+  if(curTurn=="player"){
+    playRandomExplotion();
+    let x = Math.floor(i / 10);
+    let y = i % 10;
+    const CPUattackData = cpuPlayer.receiveAttack(x, y);
+    if(CPUattackData.hit){
+      CPU_cells[i].classList.add("fire");
+      if(CPUattackData.sunked){
+        let cpuSHIPS = getCpuSHIPS();
+        let cpuICONS = getCpuICONS();
+        cpuSHIPS[CPUattackData.id].classList.remove("hiddenSHIP");
+        cpuSHIPS[CPUattackData.id].classList.add("sunked");
+        cpuSHIPS[CPUattackData.id].classList.add("inFront");
 
-
-
-
-
-
-
-
-
-    
-    
+        cpuICONS[CPUattackData.id].classList.add("sunkedICON");
+        cpuPlayer.remainingShips--;
+        if(cpuPlayer.remainingShips == 0){
+          console.log("YOU WIN");
+          victoryText.textContent = "You won!";
+          dialog.showModal();
+        }
+      }
+      
+    }else{
+      CPU_cells[i].classList.add("clicked");
+    }
+    curTurn = "cpu";
+    //CPU TURN
+    await sleep(1500);
+    cpuPlayTurn();
     
   }
-  curTurn = "player";
 }
 
 function ready(){
@@ -660,38 +715,8 @@ function ready(){
     addBoards(ALL_SHIPS_INF, enemyInfo);
     let CPU_cells = getCpuCells();
     for(let i = 0; i < CPU_cells.length; i++){
-      CPU_cells[i].addEventListener("click", () =>{
-        //
-        if(curTurn=="player"){
-          let x = Math.floor(i / 10);
-          let y = i % 10;
-          const CPUattackData = cpuPlayer.receiveAttack(x, y);
-          if(CPUattackData.hit){
-            CPU_cells[i].classList.add("fire");
-            if(CPUattackData.sunked){
-              let cpuSHIPS = getCpuSHIPS();
-              let cpuICONS = getCpuICONS();
-              cpuSHIPS[CPUattackData.id].classList.remove("hiddenSHIP");
-              cpuSHIPS[CPUattackData.id].classList.add("sunked");
-              cpuSHIPS[CPUattackData.id].classList.add("inFront");
-
-              cpuICONS[CPUattackData.id].classList.add("sunkedICON");
-              cpuPlayer.remainingShips--;
-              if(cpuPlayer.remainingShips == 0){
-                console.log("YOU WIN");
-                victoryText.textContent = "You won!";
-                dialog.showModal();
-              }
-            }
-            
-          }else{
-            CPU_cells[i].classList.add("clicked");
-          }
-          curTurn = "cpu";
-          //CPU TURN
-          cpuPlayTurn();
-        }
-        //
+      CPU_cells[i].addEventListener("click", ()=>{
+        playerClick(i, CPU_cells);
       });
     }
   }else{
